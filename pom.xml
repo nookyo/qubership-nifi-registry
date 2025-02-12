@@ -28,6 +28,7 @@
         <module>nifi-registry-util</module>
         <module>nifi-registry-migration-util</module>
         <module>nifi-registry-db-util</module>
+        <module>nifi-registry-assembly</module>
     </modules>
 
     <parent>
