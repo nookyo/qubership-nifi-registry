@@ -13,7 +13,7 @@
 # limitations under the License.
 
 FROM alpine/java:21-jdk as base
-MAINTAINER qubership.org
+LABEL org.opencontainers.image.authors="qubership.org"
 
 USER root
 #add jq:
@@ -25,6 +25,8 @@ ENV NIFI_REGISTRY_BASE_DIR /opt/nifi-registry
 ENV NIFI_REGISTRY_HOME $NIFI_REGISTRY_BASE_DIR/nifi-registry-current
 ENV NIFI_TOOLKIT_HOME ${NIFI_REGISTRY_BASE_DIR}/nifi-toolkit-current
 ENV HOME=${NIFI_REGISTRY_HOME}
+
+USER 10001
 
 FROM apache/nifi-registry:1.28.1 as nifi-reg2
 
@@ -72,7 +74,7 @@ RUN rm -rf $NIFI_TOOLKIT_HOME/lib/spring-web-*.jar \
     && rm -rf $NIFI_TOOLKIT_HOME/lib/zookeeper*.jar
 
 FROM base
-MAINTAINER qubership.org
+LABEL org.opencontainers.image.authors="qubership.org"
 
 USER 10001:10001
 WORKDIR $NIFI_REGISTRY_HOME
