@@ -1,5 +1,5 @@
 #!/bin/bash -e
-. /opt/nifi-registry/scripts/loggingApi.sh
+. /opt/nifi-registry/scripts/logging_api.sh
 
 #    Licensed to the Apache Software Foundation (ASF) under one or more
 #    contributor license agreements.  See the NOTICE file distributed with
@@ -89,7 +89,7 @@ fi
 case ${AUTH} in
     tls)
         info 'Enabling Two-Way SSL user authentication'
-        . "${scripts_dir}/pre-secure.sh"
+        . "${scripts_dir}/pre_secure.sh"
         . "${scripts_dir}/secure.sh"
         ;;
     ldap)
@@ -105,10 +105,10 @@ case ${AUTH} in
         info 'Enabling OIDC user authentication'
         prop_replace 'nifi.registry.security.needClientAuth' 'false'
 
-        . "${scripts_dir}/pre-secure.sh"
+        . "${scripts_dir}/pre_secure.sh"
         . "${scripts_dir}/secure.sh"
         . "${scripts_dir}/update_oidc_properties.sh"
-        . "${scripts_dir}/custom-oidc-secure.sh"
+        . "${scripts_dir}/custom_oidc_secure.sh"
         ;;
 esac
 
@@ -119,7 +119,7 @@ info "Checking whether to use PostgreSQL or not. Value is $NIFI_REG_USE_PGDB"
 if [ "$NIFI_REG_USE_PGDB" = 'true' ]; then
     . "${scripts_dir}/GetDBConnectionDetails.sh"
     ${JAVA_HOME}/bin/java -jar ${NIFI_REGISTRY_HOME}/db_schema_gen/nifi-registry-util.jar "$dbUrl" "$dbUsername" "$dbPassword" "${NIFI_REG_MIGRATE_TO_DB}"
-    . "${scripts_dir}/connectToDB.sh"
+    . "${scripts_dir}/connect_to_db.sh"
     info "Configuring providers and authorizers to use Database"
     cp ${scripts_dir}/DbFlowProviders.xml ${NIFI_REGISTRY_HOME}/conf/providers.xml
     cp ${scripts_dir}/DbFlowAuthorizers.xml ${NIFI_REGISTRY_HOME}/conf/authorizers.xml

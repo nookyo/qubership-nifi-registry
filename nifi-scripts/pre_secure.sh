@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-. /opt/nifi-registry/scripts/loggingApi.sh
+. /opt/nifi-registry/scripts/logging_api.sh
 
 scripts_dir='/opt/nifi-registry/scripts'
 
