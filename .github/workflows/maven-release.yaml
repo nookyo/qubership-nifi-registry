@@ -83,16 +83,16 @@
         needs: [update-pom-version]
         uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
         with:
-          maven_command: "--batch-mode package"
-          java_version: ${{ github.event.inputs.java_version }}
-          version: ${{ github.event.inputs.version }}
+          maven-command: "--batch-mode package"
+          java-version: ${{ github.event.inputs.java_version }}
           upload-artifact: true
           artifact-id: ${{ needs.update-pom-version.outputs.artifact_id }}
         secrets:
-          maven_username: ${{ secrets.MAVEN_USER }}
-          maven_password: ${{ secrets.MAVEN_PASSWORD }}
-          maven_gpg_passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-          maven_gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          # maven_username: ${{ secrets.MAVEN_USER }}
+          # maven_password: ${{ secrets.MAVEN_PASSWORD }}
+          maven-token: ${{ secrets.MAVEN_PASSWORD }}
+          # maven_gpg_passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+          # maven_gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
       tests:
         needs: [mvn-build]
