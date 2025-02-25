@@ -12,6 +12,6 @@ jobs:
           uses: actions/checkout@v4
 
         - name: Meta Extractor
-          uses: nookyo/qubership-workflow-hub/actions/meta-extractor@main
+          uses: nookyo/qubership-workflow-hub/actions/metadata-extractor@main
           with:
             template: 'SNAPSHOT-{{combined}}-v{{minor}}.{{major}}.{{patch}}-{{suffix}}-{{ sha }}'
