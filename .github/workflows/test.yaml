@@ -14,4 +14,4 @@ jobs:
         - name: Meta Extractor
           uses: nookyo/qubership-workflow-hub/actions/metadata-extractor@main
           with:
-            template: 'SNAPSHOT-{{combined}}-v{{minor}}.{{major}}.{{patch}}-{{suffix}}-{{ sha }}'
+            template: 'SNAPSHOT-{{combine}}-v{{minor}}.{{major}}.{{patch}}-{{tag}}-{{ sha }}'
