@@ -16,5 +16,5 @@ jobs:
           with:
             default-template: 'SNAPSHOT-{{combine}}-v{{major}}.{{minor}}.{{patch}}-{{tag}}-{{ sha }}'
             branch-templates: |
-                main: "Main Branch Template: {{ major }}.{{ minor }}.{{ patch }} ({{ combine }})"
-                develop: "Develop Branch Template: {{ major }}.{{ minor }}.{{ patch }} - Snapshot: {{ tag }}"
+                main: "{{ major }}.{{ minor }}.{{ patch }}-({{ combine }})"
+                develop: "SNAPSHOT-{{ combine }}"
