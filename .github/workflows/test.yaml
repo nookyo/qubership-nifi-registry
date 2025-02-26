@@ -15,3 +15,6 @@ jobs:
           uses: nookyo/qubership-workflow-hub/actions/github-metadata@main
           with:
             default-template: 'SNAPSHOT-{{combine}}-v{{major}}.{{minor}}.{{patch}}-{{tag}}-{{ sha }}'
+            branch-templates: |
+                main: "Main Branch Template: {{ major }}.{{ minor }}.{{ patch }} ({{ combine }})"
+                develop: "Develop Branch Template: {{ major }}.{{ minor }}.{{ patch }} - Snapshot: {{ tag }}"
