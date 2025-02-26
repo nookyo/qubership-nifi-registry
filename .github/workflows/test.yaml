@@ -14,12 +14,17 @@ jobs:
         - name: Github Metadata action
           uses: nookyo/qubership-workflow-hub/actions/github-metadata@main
           with:
-            template: 'SNAPSHOT-{{combine}}-v{{major}}.{{minor}}.{{patch}}-{{tag}}-{{ sha }}'
             branch-template: '{
                                 "main":"{{name}}.{{combine}}",
                                 "release":"v{{major}}.{{minor}}.{{patch}}",
                                 "dev":"SNAPSHOT-{{combine}}"
                               }'
+            dist-tags: '{
+                          "main":"next"
+                          "develop":"next"
+                          "release":"latest"
+                        }'
+
 
 
                 # main: {{ref_name}}.{{sha}}
