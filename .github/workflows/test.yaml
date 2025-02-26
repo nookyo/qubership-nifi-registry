@@ -11,7 +11,7 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
 
-        - name: Meta Extractor
+        - name: Github Metadata action
           uses: nookyo/qubership-workflow-hub/actions/github-metadata@main
           with:
             template: 'SNAPSHOT-{{combine}}-v{{major}}.{{minor}}.{{patch}}-{{tag}}-{{ sha }}'
