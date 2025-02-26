@@ -16,9 +16,9 @@ jobs:
           with:
             template: 'SNAPSHOT-{{combine}}-v{{major}}.{{minor}}.{{patch}}-{{tag}}-{{ sha }}'
             branch-template: '{
-                                "dev":"{{ref_name}}.{{sha}}",
+                                "main":"{{ref}}.{{combine}}",
                                 "release":"v{{major}}.{{minor}}.{{patch}}",
-                                "main":"SNAPSHOT-{{combine}}"
+                                "dev":"SNAPSHOT-{{combine}}"
                               }'
 
 
