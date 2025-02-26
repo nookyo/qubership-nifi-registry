@@ -16,7 +16,7 @@ jobs:
           with:
             template: 'SNAPSHOT-{{combine}}-v{{major}}.{{minor}}.{{patch}}-{{tag}}-{{ sha }}'
             branch-template: |
-                main: v{{ref}}.{{sha}}
+                main: v{{ref_name}}.{{sha}}
                 release: v{{major}}.{{minor}}.{{patch}}
                 develop: SNAPSHOT-{{combine}}
 
