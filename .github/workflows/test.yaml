@@ -15,7 +15,7 @@ jobs:
           uses: nookyo/qubership-workflow-hub/actions/github-metadata@main
           with:
             branch-template: '{
-                                "main":"{{name}}.{{combine}}",
+                                "main":"{{name}}.{{timestamp}}",
                                 "release":"v{{major}}.{{minor}}.{{patch}}",
                                 "dev":"SNAPSHOT-{{combine}}"
                               }'
