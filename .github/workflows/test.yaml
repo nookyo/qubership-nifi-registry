@@ -20,7 +20,7 @@ jobs:
                                 "dev":"SNAPSHOT-{{combine}}"
                               }'
             dist-tags: '{
-                          "main":"next",
+                          "main":"master",
                           "develop":"next",
                           "release":"latest"
                         }'
