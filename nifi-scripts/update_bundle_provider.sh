@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# shellcheck source=/dev/null
 . /opt/nifi-registry/scripts/logging_api.sh
 
 providers_file=${NIFI_REGISTRY_HOME}/conf/providers.xml

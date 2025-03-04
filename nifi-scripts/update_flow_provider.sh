@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# shellcheck source=/dev/null
 . /opt/nifi-registry/scripts/logging_api.sh
 
 providers_file=${NIFI_REGISTRY_HOME}/conf/providers.xml
@@ -30,7 +31,7 @@ case ${NIFI_REGISTRY_FLOW_PROVIDER} in
     git)
         sed -i -E "s|^(.*)<class>org.apache.nifi.registry.provider.flow.FileSystemFlowPersistenceProvider</class>(.*)|\1<class>org.apache.nifi.registry.provider.flow.git.GitFlowPersistenceProvider</class><property name=\"Remote To Push\">${NIFI_REGISTRY_GIT_REMOTE:-}</property><property name=\"Remote Access User\">${NIFI_REGISTRY_GIT_USER:-}</property><property name=\"Remote Access Password\">${NIFI_REGISTRY_GIT_PASSWORD:-}</property>\2|" "${providers_file}"
 
-        if [ ! -z "$NIFI_REGISTRY_GIT_REPO" ]; then
+        if [ -n "$NIFI_REGISTRY_GIT_REPO" ]; then
             sed -i -E "s|^(.*)<property name=\"Remote Access Password\">(.*)</property>(.*)|\1<property name=\"Remote Access Password\">\2</property><property name=\"Remote Clone Repository\">${NIFI_REGISTRY_GIT_REPO:-}</property>\3|" "${providers_file}"
         fi
         ;;

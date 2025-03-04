@@ -1,4 +1,5 @@
 #!/bin/sh -e
+# shellcheck source=/dev/null
 . /opt/nifi-registry/scripts/logging_api.sh
 #    Licensed to the Apache Software Foundation (ASF) under one or more
 #    contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +21,11 @@
 # 3 - file to perform replacement inline
 prop_replace () {
   target_file=${3:-${nifi_registry_props_file}}
-  info 'replacing target file ' ${target_file}
-  sed -i -e "s|^$1=.*$|$1=$2|"  ${target_file}
+  info 'replacing target file ' "${target_file}"
+  sed -i -e "s|^$1=.*$|$1=$2|"  "${target_file}"
 }
 
 # NIFI_REGISTRY_HOME is defined by an ENV command in the backing Dockerfile
-export nifi_registry_props_file=${NIFI_REGISTRY_HOME}/conf/nifi-registry.properties
-export hostname=$(hostname)
+export nifi_registry_props_file="${NIFI_REGISTRY_HOME}"/conf/nifi-registry.properties
+hostname=$(hostname)
+export hostname

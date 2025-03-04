@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# shellcheck source=/dev/null
 . /opt/nifi-registry/scripts/logging_api.sh
 
 delete_temp_files(){
@@ -31,16 +32,16 @@ if [ -n "$dbUrl" ]; then
         databaseUrl="$dbUrl?currentSchema=nifi_registry"
     fi
 
-    escDatabaseUrl=$(echo "$databaseUrl" | sed -e "s|&|\\\\&|g")
+    escDatabaseUrl="${databaseUrl//&/\\&}"
 fi
 
-[ -z "$database" ] && info "Database name not available" || info "Configuring Database :- $database"
-[ -z "$dbUrl" ] && info "Database URL not available" || info "Database URL :- $databaseUrl"
-[ -n "$escDatabaseUrl" ] && info "Escaped database URL :- $escDatabaseUrl"
-[ -z "$dbUsername" ] && info "Username not available" || info "Database Username :- $dbUsername"
-[ -z "$dbDriver" ] && info "Database driver not available" || info "Database Driver :- $dbDriver"
-[ -z "$dbDriverDir" ] && info "Database driver directory not available" || info "Database Driver Directory :- $dbDriverDir"
-[ -z "$dbPassword" ] && info "Password not available" || info "Database password :- *******"
+if [ -z "$database" ]; then info "Database name not available"; else info "Configuring Database :- $database"; fi
+if [ -z "$dbUrl" ]; then info "Database URL not available"; else info info "Database URL :- $databaseUrl"; fi
+if [ -n "$escDatabaseUrl" ]; then info "Escaped database URL :- $escDatabaseUrl"; fi
+if [ -z "$dbUsername" ]; then info "Username not available"; else info "Database Username :- $dbUsername"; fi
+if [ -z "$dbDriver" ]; then info "Database driver not available"; else info "Database Driver :- $dbDriver"; fi
+if [ -z "$dbDriverDir" ]; then info "Database driver directory not available"; else info "Database Driver Directory :- $dbDriverDir"; fi
+if [ -z "$dbPassword" ]; then info "Password not available"; else info "Database password :- *******"; fi
 
 info "Setting database properties..."
 prop_replace 'nifi.registry.db.url'   "$escDatabaseUrl"
