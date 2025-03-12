@@ -3,10 +3,10 @@ branches-template:
   feature*: "{{ref}}.{{timestamp}}"
   release*: "{{name}}.{{timestamp}}"
   develop: "SNAPSHOT-{{timestamp}}"
-  tag: "{{ref}}"
+  tag: "v{{patch}}.{{major}}"
 dist-tags:
   main: "latest"
   release*: "RELEASE"
   develop: "dev"
-  tag: "tag"
+  tag: "Ildar"
 
