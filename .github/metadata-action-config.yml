@@ -1,12 +1,12 @@
 branches-template:
-  main: "{{name}}.{{timestamp}}.{{sha}}.{{runNumber}}.{{actor}}"
-  feature*: "{{ref}}.{{timestamp}}"
-  release*: "{{name}}.{{timestamp}}"
-  develop: "SNAPSHOT-{{timestamp}}"
-  tag: "v{{patch}}.{{major}}"
+  - main: "{{name}}.{{timestamp}}.{{sha}}.{{runNumber}}.{{actor}}"
+  - feature*: "{{ref}}.{{timestamp}}"
+  - release*: "{{name}}.{{timestamp}}"
+  - develop: "SNAPSHOT-{{timestamp}}"
+  - tag: "v{{patch}}.{{major}}"
 dist-tags:
-  main: "latest"
-  release*: "RELEASE"
-  develop: "dev"
-  tag: "Ildar"
+  - main: "latest"
+  - release*: "RELEASE"
+  - develop: "dev"
+  - tag: "Ildar"
 
