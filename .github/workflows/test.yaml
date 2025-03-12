@@ -13,22 +13,7 @@ jobs:
 
         - name: Github Metadata action
           uses: nookyo/qubership-workflow-hub/actions/github-metadata@main
-          with:
-            branch-template: '{
-                                "main":"{{name}}.{{timestamp}}",
-                                "release":"v{{major}}.{{minor}}.{{patch}}",
-                                "dev":"SNAPSHOT-{{combine}}"
-                              }'
-            dist-tags: '{
-                          "main":"master",
-                          "develop":"next",
-                          "release":"latest"
-                        }'
+          id: metadata
 
-
-
-                # main: {{ref_name}}.{{sha}}
-                # release: v{{major}}.{{minor}}.{{patch}}
-                # develop: SNAPSHOT-{{combine}}
-
-
+        - name:
+          run: echo "rendered = ${{ steps.metadata.outputs.result }}"
