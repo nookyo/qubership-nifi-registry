@@ -1,4 +1,4 @@
-branch-template:
+branches-template:
   main: "{{ ref }}"
   feature*: "{{ref}}.{{timestamp}}"
 tags:
