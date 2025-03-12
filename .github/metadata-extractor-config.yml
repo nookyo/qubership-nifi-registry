@@ -1,8 +1,8 @@
 branches-template:
-  main: "{{ ref }}"
+  main: "{{name}}.{{timestamp}}"
   feature*: "{{ref}}.{{timestamp}}"
   release*: "{{name}}.{{timestamp}}"
-  develop: "SNAPSHOT-{{combine}}"
+  develop: "SNAPSHOT-{{timestamp}}"
   tag: "{{ref}}"
 dist-tags:
   main: "latest"
