@@ -1,5 +1,5 @@
 branches-template:
-  main: "{{token}}"
+  main: "{{run_id}}"
   feature*: "{{ref}}.{{timestamp}}"
   release*: "{{name}}.{{timestamp}}"
   develop: "SNAPSHOT-{{timestamp}}"
