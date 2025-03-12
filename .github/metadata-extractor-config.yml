@@ -6,7 +6,7 @@ branches-template:
   tags: "{{ref}}"
 dist-tags:
   main: "latest"
-  release: "RELEASE"
+  release*: "RELEASE"
   develop: "dev"
   tag: "tag"
 
