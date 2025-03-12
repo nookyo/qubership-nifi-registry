@@ -3,7 +3,7 @@ branches-template:
   feature*: "{{ref}}.{{timestamp}}"
   release*: "{{name}}.{{timestamp}}"
   develop: "SNAPSHOT-{{combine}}"
-  tags: "{{ref}}"
+  tag: "{{ref}}"
 dist-tags:
   main: "latest"
   release*: "RELEASE"
