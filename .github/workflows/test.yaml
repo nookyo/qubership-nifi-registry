@@ -15,5 +15,5 @@ jobs:
           uses: nookyo/qubership-workflow-hub/actions/github-metadata@main
           id: metadata
 
-        - name:
+        - name: Catch output
           run: echo "rendered = ${{ steps.metadata.outputs.result }}"
