@@ -4,7 +4,7 @@ branches-template:
   release*: "{{name}}.{{timestamp}}"
   develop: "SNAPSHOT-{{combine}}"
   tags: "{{ref}}"
-tags:
+dist-tags:
   main: "latest"
   release: "RELEASE"
   develop: "dev"
