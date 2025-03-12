@@ -1,6 +1,9 @@
 branches-template:
   main: "{{ ref }}"
   feature*: "{{ref}}.{{timestamp}}"
+  release*: "v{{major}}.{{minor}}.{{patch}}"
+  develop: "SNAPSHOT-{{combine}}"
+  tags: "{{ref}}"
 tags:
   main: "latest"
   release: "RELEASE"
