@@ -1,4 +1,8 @@
+branch-template:
+  main: "{{ ref }}"
+  feature*: "{{ref}}.{{timestamp}}"
 tags:
   main: "latest"
   release: "RELEASE"
   develop: "dev"
+
