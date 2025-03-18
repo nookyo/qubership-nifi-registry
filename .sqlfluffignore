@@ -1,0 +1,2 @@
+# Ignore MigrateFlowPersistenceData.sql, because changing it will lead to flyway errors
+nifi-registry-migration-util/src/main/resources/db/migration/postgres/V8.99.99.99__MigrateFlowPersistenceData.sql

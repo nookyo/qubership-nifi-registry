@@ -29,21 +29,34 @@ import org.slf4j.LoggerFactory;
 @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
 public class NiFiRegistryUtilApplication implements CommandLineRunner {
 
-	private static final Logger log = LoggerFactory.getLogger(NiFiRegistryUtilApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NiFiRegistryUtilApplication.class);
 
-	@Autowired
-	private DbManager dbManager;
+    @Autowired
+    private DbManager dbManager;
 
-	public static void main(String[] args) {
-		SpringApplication.run(NiFiRegistryUtilApplication.class, args);
-	}
+    /**
+     * Main application entrypoint.
+     *
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(NiFiRegistryUtilApplication.class, args);
+    }
 
-	@Override
-	public void run(String... args) {
-		String result = dbManager.runSqlStatement(args[0],args[1],args[2],Boolean.parseBoolean(args[3]));
-		if("".equals(result))
-			log.info("Schema creation and migration successful.");
-		else
-			log.error(result);
-	}
+    /**
+     * Application run method.
+     *
+     * @param args command line arguments
+     */
+    @Override
+    public void run(String... args) {
+        final int dbMigrationArgIdx = 3;
+        String result = dbManager.runSqlStatement(args[0], args[1], args[2],
+                Boolean.parseBoolean(args[dbMigrationArgIdx]));
+        if ("".equals(result)) {
+            LOG.info("Schema creation and migration successful.");
+        } else {
+            LOG.error(result);
+        }
+    }
 }

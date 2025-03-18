@@ -9,7 +9,7 @@ Compared with Apache NiFi Registry it supports:
 ## Installation
 
 1. Run qubership-nifi-registry container in docker:
-```
+```shell
 docker run -e AUTH='none' -p 18080:18080 <image>
 ```
 where `<image>` should be replaced with qubership-nifi-registry's image.
