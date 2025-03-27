@@ -22,7 +22,7 @@
 	<parent>
 		<artifactId>nifi-registry</artifactId>
 		<groupId>org.qubership.nifi</groupId>
-		<version>${revision}</version>
+		<version>1.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 

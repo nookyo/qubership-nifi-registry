@@ -21,7 +21,7 @@
     <groupId>org.qubership.nifi</groupId>
     <artifactId>nifi-registry</artifactId>
     <packaging>pom</packaging>
-    <version>${revision}</version>
+    <version>1.0.0</version>
     <modules>
         <module>nifi-registry-util</module>
         <module>nifi-registry-migration-util</module>
@@ -33,11 +33,10 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.5</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <properties>
-        <revision>1.0.0</revision>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

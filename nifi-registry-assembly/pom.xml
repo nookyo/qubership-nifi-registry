@@ -6,7 +6,7 @@
     <parent>
         <artifactId>nifi-registry</artifactId>
         <groupId>org.qubership.nifi</groupId>
-        <version>${revision}</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -32,13 +32,13 @@
                                 <artifactItem>
                                     <groupId>org.qubership.nifi</groupId>
                                     <artifactId>nifi-registry-db-util</artifactId>
-                                    <version>${revision}</version>
+                                    <version>${project.version}</version>
                                     <type>jar</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.qubership.nifi</groupId>
                                     <artifactId>nifi-registry-migration-util</artifactId>
-                                    <version>${revision}</version>
+                                    <version>${project.version}</version>
                                     <type>jar</type>
                                 </artifactItem>
                             </artifactItems>
