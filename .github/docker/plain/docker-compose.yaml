@@ -1,0 +1,31 @@
+---
+services:
+  nifi-registry:
+    image: local-nifi-registry:test
+    volumes:
+      - nifi-reg-db:/opt/nifi-registry/nifi-registry-current/database
+      - nifi-reg-flow:/opt/nifi-registry/nifi-registry-current/flow_storage
+    ports:
+      - 127.0.0.1:18080:18080
+    environment:
+      - AUTH=none
+    container_name: local-nifi-registry-plain
+    hostname: nifi-registry
+  consul:
+    image: hashicorp/consul:1.20
+    ports:
+      - 127.0.0.1:8500:8500
+    hostname: consul
+volumes:
+  nifi-reg-db:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: $BASE_DIR/temp-vol/nifi-reg/database/
+  nifi-reg-flow:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: $BASE_DIR/temp-vol/nifi-reg/flow-storage/

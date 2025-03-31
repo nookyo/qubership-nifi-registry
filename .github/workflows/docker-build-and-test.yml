@@ -1,0 +1,96 @@
+---
+name: Docker build and test
+
+on:
+  push:
+    paths:
+      - '.github/workflows/docker-build-and-test.yml'
+      - 'nifi-registry-db-util/**'
+      - 'nifi-registry-migration-util/**'
+      - 'nifi-registry-util/**'
+      - 'pom.xml'
+      - 'Dockerfile'
+      - 'conf-template-custom/**'
+      - 'nifi-scripts/**'
+      - '.github/actions/**'
+      - '.github/collections/**'
+      - '.github/workflows/sh/**'
+  pull_request:
+    paths:
+      - '.github/workflows/docker-build-and-test.yml'
+      - 'nifi-registry-db-util/**'
+      - 'nifi-registry-migration-util/**'
+      - 'nifi-registry-util/**'
+      - 'pom.xml'
+      - 'Dockerfile'
+      - 'conf-template-custom/**'
+      - 'nifi-scripts/**'
+      - '.github/actions/**'
+      - '.github/collections/**'
+      - '.github/workflows/sh/**'
+  workflow_dispatch:
+    inputs:
+      java-version:
+        required: false
+        type: string
+        default: "21"
+        description: 'Java version (e.g., 21)'
+jobs:
+  mvn:
+    uses: ./.github/workflows/maven-build-and-test.yml
+    with:
+      java-version: ${{ github.event.inputs.java-version || '21' }}
+      artifact-id: 'qubership-nifi-registry-local-build'
+      upload-artifact: true
+      skip-sonar: true
+  docker-build-and-test:
+    needs: [ mvn ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Input parameters
+        shell: bash
+        run: |
+          echo "Java version: ${{ github.event.inputs.java-version || '21' }}" >> $GITHUB_STEP_SUMMARY
+          mkdir -p ./test-results/
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Full git history is needed to get a proper list of changed files within `super-linter`
+          fetch-depth: 0
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: 'qubership-nifi-registry-local-build'
+      - name: Run local docker build
+        run: docker build -t local-nifi-registry:test .
+      - name: Run tests for nifi-registry in plain (non-TLS mode)
+        uses: ./.github/actions/run-nifi-reg-tests-plain
+      - name: Run tests for nifi-registry in TLS mode
+        uses: ./.github/actions/run-nifi-reg-tests-tls
+      - name: Run tests for nifi-registry in TLS mode with PG option
+        uses: ./.github/actions/run-nifi-reg-tests-tls-db
+      - name: Run tests for nifi-registry in TLS and OIDC mode
+        shell: bash
+        run: |
+          echo "TBD: tests for NiFi Registry in TLS+OIDC mode..."
+      - name: Verify test results
+        shell: bash
+        run: |
+          echo "Checking test results for failures..."
+          failed_cnt=$(find ./test-results -name "failed_*.lst" | wc -l)
+          echo "Found failed steps = $failed_cnt"
+          if [ "$failed_cnt" == "0" ]; then 
+            echo "All tests were successful!"
+          else
+            echo "Some tests ($failed_cnt) failed. Marking as failure."
+            exit 1;
+          fi
+      - name: Upload test results
+        if: failure() || cancelled()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nifi-registry-autotests-logs
+          path: |
+            ./test-results
+          retention-days: 2
+      

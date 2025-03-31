@@ -1,0 +1,1005 @@
+{
+	"info": {
+		"_postman_id": "6f9e6416-b71b-4f5f-9e6e-37aebcd9a974",
+		"name": "NiFi_Registry_API_Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Buckets",
+			"item": [
+				{
+					"name": "Create bucket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestBucket0001\");\r",
+									"    pm.environment.set(\"registry.bucket1.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestBucket0001\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create bucket 2nd time",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.response.to.have.status(409);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"A bucket with the same name already exists\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestBucket0001\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create bucket2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestBucket0002\");\r",
+									"    pm.environment.set(\"registry.bucket2.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestBucket0002\",\r\n    \"description\": \"Test Bucket 0002 initial description\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create bucket3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestBucket0003\");\r",
+									"    pm.environment.set(\"registry.bucket3.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestBucket0003\",\r\n    \"description\": \"Test Bucket 0003 initial description\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get buckets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains two created buckets\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    bucketId1 = null;\r",
+									"    bucketId2 = null;\r",
+									"    for (var i = 0; i < jsonData.length; i++) {\r",
+									"        var bucket = jsonData[i]\r",
+									"        if (bucket.name == \"TestBucket0001\") {\r",
+									"            bucketId1 = bucket.identifier;\r",
+									"        }\r",
+									"        if (bucket.name == \"TestBucket0002\") {\r",
+									"            bucketId2 = bucket.identifier;\r",
+									"        }\r",
+									"    }\r",
+									"    pm.expect(bucketId1 != null).to.eql(true);\r",
+									"    pm.expect(bucketId2 != null).to.eql(true);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get bucket1 by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains requested bucket\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestBucket0001\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify bucket1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains updated bucket\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.eql(\"Bucket 0001 new description\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Bucket 0001 new description\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify bucket3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains updated bucket\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.eql(\"Bucket 0003 new description\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Bucket 0003 new description\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket3.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket3.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete bucket3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains bucket\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.eql(\"Bucket 0003 new description\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket3.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket3.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get bucket3 by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"The specified bucket ID does not exist in this registry.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket3.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket3.id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Flows",
+			"item": [
+				{
+					"name": "Create flow1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestFlow0001\");\r",
+									"    pm.environment.set(\"registry.flow1.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestFlow0001\",\r\n    \"description\": \"Initial flow description 0001\",\r\n    \"type\": \"Flow\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create flow1 2nd time",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.response.to.have.status(409);\r",
+									"});\r",
+									"pm.test(\"Response is Text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"A versioned flow with the same name already exists in the selected bucket\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestFlow0001\",\r\n    \"description\": \"Initial flow description 0001\",\r\n    \"type\": \"Flow\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create flow2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestFlow0002\");\r",
+									"    pm.environment.set(\"registry.flow2.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestFlow0002\",\r\n    \"description\": \"Initial flow description 0002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create flow3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestFlow0003\");\r",
+									"    pm.environment.set(\"registry.flow3.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestFlow0003\",\r\n    \"description\": \"Initial flow description 0003\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create flow4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestFlow0004\");\r",
+									"    pm.environment.set(\"registry.flow4.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestFlow0004\",\r\n    \"description\": \"Initial flow description 0004\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket2.id}}/flows",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket2.id}}",
+								"flows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flows bucket1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 3 created flows\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    flowId1 = null;\r",
+									"    flowId2 = null;\r",
+									"    flowId3 = null;\r",
+									"    flowId4 = null;\r",
+									"    for (var i = 0; i < jsonData.length; i++) {\r",
+									"        var flow = jsonData[i]\r",
+									"        if (flow.name == \"TestFlow0001\") {\r",
+									"            flowId1 = flow.identifier;\r",
+									"        }\r",
+									"        if (flow.name == \"TestFlow0002\") {\r",
+									"            flowId2 = flow.identifier;\r",
+									"        }\r",
+									"        if (flow.name == \"TestFlow0003\") {\r",
+									"            flowId3 = flow.identifier;\r",
+									"        }\r",
+									"        if (flow.name == \"TestFlow0004\") {\r",
+									"            flowId4 = flow.identifier;\r",
+									"        }\r",
+									"    }\r",
+									"    pm.expect(flowId1 != null).to.eql(true);\r",
+									"    pm.expect(flowId2 != null).to.eql(true);\r",
+									"    pm.expect(flowId3 != null).to.eql(true);\r",
+									"    pm.expect(flowId4 != null).to.eql(false);\r",
+									"    pm.expect(jsonData.length).to.eql(3);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flows bucket2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 created flow\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    flowId1 = null;\r",
+									"    flowId2 = null;\r",
+									"    flowId3 = null;\r",
+									"    flowId4 = null;\r",
+									"    for (var i = 0; i < jsonData.length; i++) {\r",
+									"        var flow = jsonData[i]\r",
+									"        if (flow.name == \"TestFlow0001\") {\r",
+									"            flowId1 = flow.identifier;\r",
+									"        }\r",
+									"        if (flow.name == \"TestFlow0002\") {\r",
+									"            flowId2 = flow.identifier;\r",
+									"        }\r",
+									"        if (flow.name == \"TestFlow0003\") {\r",
+									"            flowId3 = flow.identifier;\r",
+									"        }\r",
+									"        if (flow.name == \"TestFlow0004\") {\r",
+									"            flowId4 = flow.identifier;\r",
+									"        }\r",
+									"    }\r",
+									"    pm.expect(flowId1 != null).to.eql(false);\r",
+									"    pm.expect(flowId2 != null).to.eql(false);\r",
+									"    pm.expect(flowId3 != null).to.eql(false);\r",
+									"    pm.expect(flowId4 != null).to.eql(true);\r",
+									"    pm.expect(jsonData.length).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket2.id}}/flows",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket2.id}}",
+								"flows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow1 by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains requested flow\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestFlow0001\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow1.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow1.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify flow1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains updated flow\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.eql(\"New flow description 0001\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestFlow0001\",\r\n    \"description\": \"New flow description 0001\",\r\n    \"type\": \"Flow\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow1.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow1.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify flow3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains updated flow\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.eql(\"New flow description 0003\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestFlow0003\",\r\n    \"description\": \"New flow description 0003\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow3.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow3.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete flow3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains flow\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.description).to.eql(\"New flow description 0003\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow3.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow3.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow3 by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"The specified flow ID does not exist in this bucket.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow3.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow3.id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

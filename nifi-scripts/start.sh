@@ -121,7 +121,7 @@ esac
 info "Create or Retrieve DataSource Initiated..."
 info "Checking whether to use PostgreSQL or not. Value is $NIFI_REG_USE_PGDB"
 if [ "$NIFI_REG_USE_PGDB" = 'true' ]; then
-    . "${scripts_dir}/GetDBConnectionDetails.sh"
+    [ -f "${scripts_dir}/GetDBConnectionDetails.sh" ] && . "${scripts_dir}/GetDBConnectionDetails.sh"
     "${JAVA_HOME}"/bin/java -jar "${NIFI_REGISTRY_HOME}"/db_schema_gen/nifi-registry-util.jar "$dbUrl" "$dbUsername" "$dbPassword" "${NIFI_REG_MIGRATE_TO_DB}"
     . "${scripts_dir}/connect_to_db.sh"
     info "Configuring providers and authorizers to use Database"

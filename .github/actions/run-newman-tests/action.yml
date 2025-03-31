@@ -1,0 +1,86 @@
+---
+name: 'Run newman tests'
+description: 'Runs newman tests'
+inputs:
+  collection-name:
+    description: 'Name of collection to run'
+    required: false
+    default: 'NiFi_Registry_API_Tests.postman_collection.json'
+  short-name:
+    description: 'Short name of collection to run'
+    required: false
+    default: 'basic'
+  env-name:
+    description: 'Environment name for newman run'
+    required: false
+    default: 'NiFi_Reg_AT.json.postman_environment'
+  results-dir:
+    description: 'Directory to store results'
+    required: false
+    default: 'plain'
+  tls-certs-dir:
+    description: |
+      Path to local directory with TLS certificates in PEM format. 
+      Corresponds to newman option ssl-extra-ca-certs.
+    required: false
+    default: './temp-vol/tls-cert'
+  tls-ca-certs:
+    description: |
+      Relative path (within directory specified in tls-certs-dir) to file with additional TLS CA certificates in PEM format. 
+      Corresponds to newman option ssl-extra-ca-certs.
+    required: false
+    default: ''
+  tls-client-certs-config:
+    description: |
+      Relative path (within directory specified in tls-certs-dir) to JSON file with TLS client certificates configuration. 
+      Corresponds to newman option ssl-client-cert-list.
+    required: false
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Prepare output directory
+      shell: bash
+      run: |
+        echo "Preparing output directory ${{ inputs.results-dir }}"
+        mkdir -p "./test-results/${{ inputs.results-dir }}/"
+    - name: Run newman tests
+      shell: bash
+      continue-on-error: true
+      run: |
+        gitDir="$(pwd)"
+        collectionsDir="${gitDir}/.github/collections"
+        echo "Running newman using collection ${{ inputs.collection-name }} with env ${{ inputs.env-name }} from $collectionsDir"
+        caCertsFile="${{ inputs.tls-ca-certs }}"
+        caCertsOption=''
+        clientCertConfigFile="${{ inputs.tls-client-certs-config }}"
+        clientCertConfigOption=''
+        echo "Additional TLS options: caCertsFile = $caCertsFile, clientCertConfigFile = $clientCertConfigFile"
+        if [ -n "$caCertsFile" ]; then
+          caCertsOption="--ssl-extra-ca-certs \"/tmp/tls-certs/$caCertsFile\""
+        else
+          caCertsOption=''
+        fi
+        if [ -n "$clientCertConfigFile" ]; then
+          clientCertConfigOption="--ssl-client-cert-list \"/tmp/tls-certs/$clientCertConfigFile\""
+        else
+          clientCertConfigFile=''
+        fi
+        additionalVolumes=''
+        tlsCertsDir="${{ inputs.tls-certs-dir }}"
+        if [ -d "$tlsCertsDir" ]; then
+          echo "TLS certificate directory found at $tlsCertsDir, adding volume mapped to /tmp/tls-certs"
+          additionalVolumes="-v \"$tlsCertsDir:/tmp/tls-certs\""
+        fi
+        eval docker run --net=host --rm -v "$collectionsDir:/etc/newman" \
+          "$additionalVolumes" postman/newman:alpine run "${{ inputs.collection-name }}" \
+          --environment="${{ inputs.env-name }}" -r cli,junit \
+          "$caCertsOption" "$clientCertConfigOption" || \
+          echo "Collection ${{ inputs.short-name }} failed to run" > \
+            "./test-results/${{ inputs.results-dir }}/failed_${{ inputs.short-name }}_at.lst"
+    - name: Collect test results
+      shell: bash
+      continue-on-error: true
+      run: |
+        echo "Collecting collection results into ./test-results/${{ inputs.results-dir }}..."
+        find .github/collections -name \*.xml -exec cp {} ./test-results/${{ inputs.results-dir }}/ \;
