@@ -122,8 +122,8 @@ public class DbManager {
         int count;
         try (ResultSet rs = statement.executeQuery(
                 "SELECT COUNT(*) AS recordCount " +
-                "from mig_flow_persistence_provider_status " +
-                "where status = 1")) {
+                        "from mig_flow_persistence_provider_status " +
+                        "where status = 1")) {
             rs.next();
             count = rs.getInt("recordCount");
         }
@@ -151,9 +151,9 @@ public class DbManager {
                                         forEach(content -> {
                                             try (PreparedStatement prepStmt = statement.getConnection().
                                                     prepareStatement(
-                                                    "insert into mig_flow_persistence_provider" +
-                                                            "(bucket_id, flow_id, version, flow_content) " +
-                                                        "values (?,?,?,?)")) {
+                                                            "insert into mig_flow_persistence_provider" +
+                                                                    "(bucket_id, flow_id, version, flow_content) " +
+                                                                    "values (?,?,?,?)")) {
                                                 final int versionIndex = 3;
                                                 final int contentIndex = 4;
                                                 prepStmt.setString(1, bucketId);
@@ -188,4 +188,3 @@ public class DbManager {
         statement.execute("insert into mig_flow_persistence_provider_status values(current_timestamp, 1)");
     }
 }
-

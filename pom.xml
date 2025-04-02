@@ -45,6 +45,9 @@
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
         <postgresql.jdbc.version>42.7.2</postgresql.jdbc.version>
         <commons-io.version>2.11.0</commons-io.version>
+        <testcontainers.version>1.20.4</testcontainers.version>
+        <junit.jupiter.version>5.11.1</junit.jupiter.version>
+        <lombok.version>1.18.30</lombok.version>
     </properties>
 
     <distributionManagement>
