@@ -20,9 +20,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>nifi-registry</artifactId>
-		<groupId>org.qubership.nifi</groupId>
-		<version>1.0.0</version>
+        <artifactId>qubership-nifi-registry</artifactId>
+        <groupId>org.qubership.nifi</groupId>
+        <version>1.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
