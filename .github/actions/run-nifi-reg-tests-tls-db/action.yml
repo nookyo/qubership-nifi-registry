@@ -1,6 +1,6 @@
 ---
 name: 'Run NiFi Registry in TLS mode with DB storage and execute autotests'
-description: 'Runs NiFi Registry and Consul containers and executes autotests'
+description: 'Runs NiFi Registry and other containers and executes autotests'
 inputs:
   results-dir:
     description: 'Directory to store results'
@@ -33,7 +33,7 @@ runs:
       run: |
         . .github/workflows/sh/nifi-lib.sh
         NIFI_CLIENT_PASSWORD=$(cat ./temp-vol/tls-cert/nifi/CN=admin_OU=NIFI.password)
-        wait_nifi_reg_container "localhost" "18080" "local-nifi-registry-tls-db" "true" \
+        wait_nifi_reg_container "localhost" "18080" ".github/docker/tls-db/docker-compose.yaml" "true" \
           "5" "40" "${{ inputs.results-dir }}" "./temp-vol/tls-cert/nifi/nifi-cert.pem" \
           "./temp-vol/tls-cert/nifi/CN=admin_OU=NIFI.p12" "$NIFI_CLIENT_PASSWORD"
     - name: Run nifi registry API tests

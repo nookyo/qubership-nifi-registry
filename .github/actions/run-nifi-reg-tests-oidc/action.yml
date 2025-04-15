@@ -1,11 +1,11 @@
 ---
-name: 'Run NiFi Registry in TLS mode and execute autotests'
+name: 'Run NiFi Registry in OIDC mode with DB storage and execute autotests'
 description: 'Runs NiFi Registry and other containers and executes autotests'
 inputs:
   results-dir:
     description: 'Directory to store results'
     required: false
-    default: 'tls'
+    default: 'oidc'
 runs:
   using: "composite"
   steps:
@@ -18,8 +18,7 @@ runs:
         prepare_results_dir "${{ inputs.results-dir }}"
         generate_tls_passwords
         create_docker_env_file
-        mkdir -p ./temp-vol/nifi-reg/database/
-        mkdir -p ./temp-vol/nifi-reg/flow-storage/
+        mkdir -p ./temp-vol/pg-db/
         mkdir -p ./temp-vol/tls-cert/
         mkdir -p ./temp-vol/tls-cert/nifi-registry/
         chmod -R 777 ./temp-vol
@@ -27,14 +26,14 @@ runs:
       shell: bash
       run: |
         echo "Starting containers..."
-        docker compose -f .github/docker/tls/docker-compose.yaml --env-file ./docker.env up -d
+        docker compose -f .github/docker/oidc/docker-compose.yaml --env-file ./docker.env up -d
     - name: Wait for nifi-registry container to start
       shell: bash
       continue-on-error: true
       run: |
         . .github/workflows/sh/nifi-lib.sh
         NIFI_CLIENT_PASSWORD=$(cat ./temp-vol/tls-cert/nifi/CN=admin_OU=NIFI.password)
-        wait_nifi_reg_container "localhost" "18080" ".github/docker/tls/docker-compose.yaml" "true" \
+        wait_nifi_reg_container "localhost" "18080" ".github/docker/oidc/docker-compose.yaml" "true" \
           "5" "40" "${{ inputs.results-dir }}" "./temp-vol/tls-cert/nifi/nifi-cert.pem" \
           "./temp-vol/tls-cert/nifi/CN=admin_OU=NIFI.p12" "$NIFI_CLIENT_PASSWORD"
     - name: Run nifi registry API tests
@@ -53,6 +52,6 @@ runs:
       continue-on-error: true
       run: |
         echo "Stopping and removing containers"
-        docker compose -f .github/docker/tls/docker-compose.yaml --env-file ./docker.env down -v
+        docker compose -f .github/docker/oidc/docker-compose.yaml --env-file ./docker.env down -v
         echo "Removing temporary volume data"
         sudo rm -rf ./temp-vol/

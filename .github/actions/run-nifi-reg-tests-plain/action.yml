@@ -1,6 +1,6 @@
 ---
 name: 'Run NiFi Registry in plain mode and execute autotests'
-description: 'Runs NiFi Registry and Consul containers and executes autotests'
+description: 'Runs NiFi Registry and other containers and executes autotests'
 inputs:
   results-dir:
     description: 'Directory to store results'
@@ -31,7 +31,7 @@ runs:
       continue-on-error: true
       run: |
         . .github/workflows/sh/nifi-lib.sh
-        wait_nifi_reg_container "127.0.0.1" "18080" "local-nifi-registry-plain" "false" "5" "40" "${{ inputs.results-dir }}"
+        wait_nifi_reg_container "127.0.0.1" "18080" ".github/docker/plain/docker-compose.yaml" "false" "5" "40" "${{ inputs.results-dir }}"
     - name: Run nifi registry API tests
       continue-on-error: true
       uses: ./.github/actions/run-newman-tests
