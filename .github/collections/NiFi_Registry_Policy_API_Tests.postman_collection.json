@@ -1,0 +1,1535 @@
+{
+	"info": {
+		"_postman_id": "41c9f2de-510e-4cd4-be75-6ad1bf6775ff",
+		"name": "NiFi_Registry_Policy_API_Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users and groups",
+			"item": [
+				{
+					"name": "Get all users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(1);\r",
+									"    pm.expect(jsonData[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+									"    pm.environment.set(\"registry.default.admin.id\", jsonData[0].identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create nifi-test-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains created user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"nifi-test-user@qubership.org\");\r",
+									"    pm.environment.set(\"registry.user.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identity\": \"nifi-test-user@qubership.org\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create nifi-test-user duplicate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.response.to.have.status(409);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"User/user group already exists with the identity 'nifi-test-user@qubership.org'.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identity\": \"nifi-test-user@qubership.org\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Administrators group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains created group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"Administrators\");\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"    pm.environment.set(\"registry.group.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identity\": \"Administrators\",\r\n    \"users\": [\r\n        {\r\n            \"identifier\": \"{{registry.user.id}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/user-groups",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"user-groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Administrators group duplicate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.response.to.have.status(409);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"User/user group already exists with the identity 'Administrators'.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identity\": \"Administrators\",\r\n    \"users\": [\r\n        {\r\n            \"identifier\": \"{{registry.user.id}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/user-groups",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"user-groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users after create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains two users\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(2);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all user groups",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/user-groups",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"user-groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get default admin by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains user data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users/{{registry.default.admin.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users",
+								"{{registry.default.admin.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains user data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"nifi-test-user@qubership.org\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users/{{registry.user.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users",
+								"{{registry.user.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get non-existing user by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"The specified user group ID does not exist in this registry.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/user-groups/{{registry.user.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"user-groups",
+								"{{registry.user.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user group by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains group data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"Administrators\");\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/user-groups/{{registry.group.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"user-groups",
+								"{{registry.group.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get non-existing group by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"The specified user ID does not exist in this registry.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users/{{registry.group.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users",
+								"{{registry.group.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create nifi-test-user2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains created user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"nifi-test-user2@qubership.org\");\r",
+									"    pm.environment.set(\"registry.user2.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identity\": \"nifi-test-user2@qubership.org\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify Administrators group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains modified group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"Administrators\");\r",
+									"    pm.expect(jsonData.users.length).to.eql(2);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identifier\": \"{{registry.group.id}}\",\r\n    \"identity\": \"Administrators\",\r\n    \"users\": [\r\n        {\r\n            \"identifier\": \"{{registry.user.id}}\"\r\n        },\r\n        {\r\n            \"identifier\": \"{{registry.user2.id}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/user-groups/{{registry.group.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"user-groups",
+								"{{registry.group.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify nifi-test-user2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains modified user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"nifi-test-user3@qubership.org\");\r",
+									"    pm.environment.set(\"registry.user2.version\", jsonData.revision.version);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identifier\": \"{{registry.user2.id}}\",\r\n    \"identity\": \"nifi-test-user3@qubership.org\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users/{{registry.user2.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users",
+								"{{registry.user2.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Administrators2 group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains created group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"Administrators2\");\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"    pm.environment.set(\"registry.group2.id\", jsonData.identifier);\r",
+									"    pm.environment.set(\"registry.group2.version\", jsonData.revision.version);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identity\": \"Administrators2\",\r\n    \"users\": [\r\n        {\r\n            \"identifier\": \"{{registry.user.id}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/user-groups",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"user-groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete nifi-test-user3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains deleted user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"nifi-test-user3@qubership.org\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users/{{registry.user2.id}}?version={{registry.user2.version}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users",
+								"{{registry.user2.id}}"
+							],
+							"query": [
+								{
+									"key": "version",
+									"value": "{{registry.user2.version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete non-existent user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"The specified user ID does not exist in this registry.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/users/{{registry.user2.id}}?version={{registry.user2.version}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"users",
+								"{{registry.user2.id}}"
+							],
+							"query": [
+								{
+									"key": "version",
+									"value": "{{registry.user2.version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Administrators2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains deleted user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.identity).to.eql(\"Administrators2\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/user-groups/{{registry.group2.id}}?version={{registry.group2.version}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"user-groups",
+								"{{registry.group2.id}}"
+							],
+							"query": [
+								{
+									"key": "version",
+									"value": "{{registry.group2.version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete non-existent group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"The specified user group ID does not exist in this registry.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/tenants/user-groups/{{registry.user2.id}}?version={{registry.user2.version}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"tenants",
+								"user-groups",
+								"{{registry.user2.id}}"
+							],
+							"query": [
+								{
+									"key": "version",
+									"value": "{{registry.user2.version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Policies",
+			"item": [
+				{
+					"name": "Get all policies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length > 0).to.eql(true);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get policy read-proxy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+									"    pm.environment.set(\"registry.read.proxy.id\", jsonData.identifier);\r",
+									"    pm.environment.set(\"registry.read.proxy.version\", jsonData.revision.version);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/read/proxy",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"read",
+								"proxy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get policy write-proxy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+									"    pm.environment.set(\"registry.write.proxy.id\", jsonData.identifier);\r",
+									"    pm.environment.set(\"registry.write.proxy.version\", jsonData.revision.version);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/write/proxy",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"write",
+								"proxy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify policy read-proxy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"read\",\r\n    \"identifier\": \"{{registry.read.proxy.id}}\",\r\n    \"resource\": \"/proxy\",\r\n    \"revision\": {\r\n        \"version\": \"{{registry.read.proxy.version}}\"\r\n    },\r\n    \"userGroups\": [\r\n        {\r\n            \"identifier\": \"{{registry.group.id}}\"\r\n        }\r\n    ],\r\n    \"users\": [\r\n        {\r\n            \"identifier\": \"{{registry.default.admin.id}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/{{registry.read.proxy.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"{{registry.read.proxy.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify policy write-proxy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"write\",\r\n    \"identifier\": \"{{registry.write.proxy.id}}\",\r\n    \"resource\": \"/proxy\",\r\n    \"revision\": {\r\n        \"version\": \"{{registry.write.proxy.version}}\"\r\n    },\r\n    \"userGroups\": [\r\n        {\r\n            \"identifier\": \"{{registry.group.id}}\"\r\n        }\r\n    ],\r\n    \"users\": [\r\n        {\r\n            \"identifier\": \"{{registry.default.admin.id}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/{{registry.write.proxy.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"{{registry.write.proxy.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get policy read-buckets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+									"    pm.environment.set(\"registry.read.buckets.id\", jsonData.identifier);\r",
+									"    pm.environment.set(\"registry.read.buckets.version\", jsonData.revision.version);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/read/buckets",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"read",
+								"buckets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get policy write-buckets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+									"    pm.environment.set(\"registry.write.buckets.id\", jsonData.identifier);\r",
+									"    pm.environment.set(\"registry.write.buckets.version\", jsonData.revision.version);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/write/buckets",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"write",
+								"buckets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get policy delete-buckets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+									"    pm.environment.set(\"registry.delete.buckets.id\", jsonData.identifier);\r",
+									"    pm.environment.set(\"registry.delete.buckets.version\", jsonData.revision.version);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/delete/buckets",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"delete",
+								"buckets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify policy read-buckets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"read\",\r\n    \"identifier\": \"{{registry.read.buckets.id}}\",\r\n    \"resource\": \"/buckets\",\r\n    \"revision\": {\r\n        \"version\": \"{{registry.read.buckets.version}}\"\r\n    },\r\n    \"userGroups\": [\r\n        {\r\n            \"identifier\": \"{{registry.group.id}}\"\r\n        }\r\n    ],\r\n    \"users\": [\r\n        {\r\n            \"identifier\": \"{{registry.default.admin.id}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/{{registry.read.buckets.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"{{registry.read.buckets.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify policy write-buckets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"write\",\r\n    \"identifier\": \"{{registry.write.buckets.id}}\",\r\n    \"resource\": \"/buckets\",\r\n    \"revision\": {\r\n        \"version\": \"{{registry.write.buckets.version}}\"\r\n    },\r\n    \"userGroups\": [\r\n        {\r\n            \"identifier\": \"{{registry.group.id}}\"\r\n        }\r\n    ],\r\n    \"users\": [\r\n        {\r\n            \"identifier\": \"{{registry.default.admin.id}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/{{registry.write.buckets.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"{{registry.write.buckets.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify policy delete-buckets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"delete\",\r\n    \"identifier\": \"{{registry.delete.buckets.id}}\",\r\n    \"resource\": \"/buckets\",\r\n    \"revision\": {\r\n        \"version\": \"{{registry.delete.buckets.version}}\"\r\n    },\r\n    \"userGroups\": [\r\n        {\r\n            \"identifier\": \"{{registry.group.id}}\"\r\n        }\r\n    ],\r\n    \"users\": [\r\n        {\r\n            \"identifier\": \"{{registry.default.admin.id}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/{{registry.delete.buckets.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"{{registry.delete.buckets.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get policy delete-buckets by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user and 1 group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/{{registry.delete.buckets.id}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"{{registry.delete.buckets.id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new test bucket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestBucket0099\");\r",
+									"    pm.environment.set(\"registry.bucket4policy.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestBucket0099\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create bucket-level delete policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 1 user and 1 group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+									"    pm.environment.set(\"registry.delete.newbucket.id\", jsonData.identifier);\r",
+									"    pm.environment.set(\"registry.delete.newbucket.version\", jsonData.revision.version);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"delete\",\r\n    \"resource\": \"/buckets/{{registry.bucket4policy.id}}\",\r\n    \"revision\": {\r\n        \"version\": 0\r\n    },\r\n    \"userGroups\": [\r\n        {\r\n            \"identifier\": \"{{registry.group.id}}\"\r\n        }\r\n    ],\r\n    \"users\": [\r\n        {\r\n            \"identifier\": \"{{registry.default.admin.id}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete bucket-level delete policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and removed policy contained 1 user and 1 group\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users.length).to.eql(1);\r",
+									"    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/{{registry.delete.newbucket.id}}?version={{registry.delete.newbucket.version}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"{{registry.delete.newbucket.id}}"
+							],
+							"query": [
+								{
+									"key": "version",
+									"value": "{{registry.delete.newbucket.version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete missing policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"The specified policy does not exist in this registry.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/policies/{{registry.delete.newbucket.id}}?version={{registry.delete.newbucket.version}}",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"policies",
+								"{{registry.delete.newbucket.id}}"
+							],
+							"query": [
+								{
+									"key": "version",
+									"value": "{{registry.delete.newbucket.version}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

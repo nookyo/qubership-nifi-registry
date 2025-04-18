@@ -1000,6 +1000,669 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Flow Versions",
+			"item": [
+				{
+					"name": "Create flow5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"TestFlow0005\");\r",
+									"    pm.environment.set(\"registry.flow5.id\", jsonData.identifier);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestFlow0005\",\r\n    \"description\": \"Initial flow description 0005\",\r\n    \"type\": \"Flow\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create flow5 version1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.flow.name).to.eql(\"TestFlow0005\");\r",
+									"    pm.expect(jsonData.snapshotMetadata.version).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"externalControllerServices\":{},\"flowContents\":{\"comments\":\"\",\"componentType\":\"PROCESS_GROUP\",\"connections\":[{\"backPressureDataSizeThreshold\":\"1 GB\",\"backPressureObjectThreshold\":10000,\"bends\":[],\"componentType\":\"CONNECTION\",\"destination\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"995071cd-d73b-31d7-800d-dfc40e4b0308\",\"instanceIdentifier\":\"43ce6f8c-0196-1000-b679-8474200670ba\",\"name\":\"UpdateAttribute\",\"type\":\"PROCESSOR\"},\"flowFileExpiration\":\"0 sec\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"958ec51b-e7cf-39f0-afcb-a7a459ebeda5\",\"instanceIdentifier\":\"43ce7e2e-0196-1000-c3a0-ba6b0aa0f05e\",\"labelIndex\":1,\"loadBalanceCompression\":\"DO_NOT_COMPRESS\",\"loadBalanceStrategy\":\"DO_NOT_LOAD_BALANCE\",\"name\":\"\",\"partitioningAttribute\":\"\",\"prioritizers\":[],\"selectedRelationships\":[\"success\"],\"source\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"3ec352df-45d4-3b56-b9ae-e7af4844b09b\",\"instanceIdentifier\":\"43ce5e0a-0196-1000-d10b-cdbd5f0e5dee\",\"name\":\"GenerateFlowFile\",\"type\":\"PROCESSOR\"},\"zIndex\":0}],\"controllerServices\":[],\"defaultBackPressureDataSizeThreshold\":\"1 GB\",\"defaultBackPressureObjectThreshold\":10000,\"defaultFlowFileExpiration\":\"0 sec\",\"flowFileConcurrency\":\"UNBOUNDED\",\"flowFileOutboundPolicy\":\"STREAM_WHEN_AVAILABLE\",\"funnels\":[],\"identifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"inputPorts\":[],\"instanceIdentifier\":\"43ce4132-0196-1000-7c0a-7ec9f0689782\",\"labels\":[],\"name\":\"TestPG0005\",\"outputPorts\":[],\"position\":{\"x\":480.0,\"y\":160.0},\"processGroups\":[],\"processors\":[{\"autoTerminatedRelationships\":[\"success\"],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-update-attribute-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"995071cd-d73b-31d7-800d-dfc40e4b0308\",\"instanceIdentifier\":\"43ce6f8c-0196-1000-b679-8474200670ba\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"UpdateAttribute\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":488.0,\"y\":256.0},\"properties\":{\"Store State\":\"Do not store state\",\"canonical-value-lookup-cache-size\":\"100\"},\"propertyDescriptors\":{\"Delete Attributes Expression\":{\"displayName\":\"Delete Attributes Expression\",\"identifiesControllerService\":false,\"name\":\"Delete Attributes Expression\",\"sensitive\":false},\"Store State\":{\"displayName\":\"Store State\",\"identifiesControllerService\":false,\"name\":\"Store State\",\"sensitive\":false},\"canonical-value-lookup-cache-size\":{\"displayName\":\"Cache Value Lookup Cache Size\",\"identifiesControllerService\":false,\"name\":\"canonical-value-lookup-cache-size\",\"sensitive\":false},\"Stateful Variables Initial Value\":{\"displayName\":\"Stateful Variables Initial Value\",\"identifiesControllerService\":false,\"name\":\"Stateful Variables Initial Value\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":25,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"0 sec\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.attributes.UpdateAttribute\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-standard-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"3ec352df-45d4-3b56-b9ae-e7af4844b09b\",\"instanceIdentifier\":\"43ce5e0a-0196-1000-d10b-cdbd5f0e5dee\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"GenerateFlowFile\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":487.0,\"y\":64.0},\"properties\":{\"character-set\":\"UTF-8\",\"File Size\":\"0B\",\"Batch Size\":\"1\",\"Unique FlowFiles\":\"false\",\"Data Format\":\"Text\"},\"propertyDescriptors\":{\"character-set\":{\"displayName\":\"Character Set\",\"identifiesControllerService\":false,\"name\":\"character-set\",\"sensitive\":false},\"File Size\":{\"displayName\":\"File Size\",\"identifiesControllerService\":false,\"name\":\"File Size\",\"sensitive\":false},\"mime-type\":{\"displayName\":\"Mime Type\",\"identifiesControllerService\":false,\"name\":\"mime-type\",\"sensitive\":false},\"generate-ff-custom-text\":{\"displayName\":\"Custom Text\",\"identifiesControllerService\":false,\"name\":\"generate-ff-custom-text\",\"sensitive\":false},\"Batch Size\":{\"displayName\":\"Batch Size\",\"identifiesControllerService\":false,\"name\":\"Batch Size\",\"sensitive\":false},\"Unique FlowFiles\":{\"displayName\":\"Unique FlowFiles\",\"identifiesControllerService\":false,\"name\":\"Unique FlowFiles\",\"sensitive\":false},\"Data Format\":{\"displayName\":\"Data Format\",\"identifiesControllerService\":false,\"name\":\"Data Format\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":0,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"1 min\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.standard.GenerateFlowFile\",\"yieldDuration\":\"1 sec\"}],\"remoteProcessGroups\":[],\"variables\":{}},\"flowEncodingVersion\":\"1.0\",\"parameterContexts\":{},\"parameterProviders\":{},\"snapshotMetadata\":{\"author\":\"test\",\"comments\":\"Initial version for flow 005\",\"timestamp\":1744894343392,\"version\":1}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow5 version1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.snapshotMetadata.version).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions/1/export",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions",
+								"1",
+								"export"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export flow5 version1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.flow.name).to.eql(\"TestFlow0005\");\r",
+									"    pm.expect(jsonData.snapshotMetadata.version).to.eql(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions/1",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create flow5 duplicate version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.response.to.have.status(409);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"A Versioned flow snapshot with the same version already exists: 1\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"externalControllerServices\":{},\"flowContents\":{\"comments\":\"\",\"componentType\":\"PROCESS_GROUP\",\"connections\":[{\"backPressureDataSizeThreshold\":\"1 GB\",\"backPressureObjectThreshold\":10000,\"bends\":[],\"componentType\":\"CONNECTION\",\"destination\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"995071cd-d73b-31d7-800d-dfc40e4b0308\",\"instanceIdentifier\":\"43ce6f8c-0196-1000-b679-8474200670ba\",\"name\":\"UpdateAttribute\",\"type\":\"PROCESSOR\"},\"flowFileExpiration\":\"0 sec\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"958ec51b-e7cf-39f0-afcb-a7a459ebeda5\",\"instanceIdentifier\":\"43ce7e2e-0196-1000-c3a0-ba6b0aa0f05e\",\"labelIndex\":1,\"loadBalanceCompression\":\"DO_NOT_COMPRESS\",\"loadBalanceStrategy\":\"DO_NOT_LOAD_BALANCE\",\"name\":\"\",\"partitioningAttribute\":\"\",\"prioritizers\":[],\"selectedRelationships\":[\"success\"],\"source\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"3ec352df-45d4-3b56-b9ae-e7af4844b09b\",\"instanceIdentifier\":\"43ce5e0a-0196-1000-d10b-cdbd5f0e5dee\",\"name\":\"GenerateFlowFile\",\"type\":\"PROCESSOR\"},\"zIndex\":0}],\"controllerServices\":[],\"defaultBackPressureDataSizeThreshold\":\"1 GB\",\"defaultBackPressureObjectThreshold\":10000,\"defaultFlowFileExpiration\":\"0 sec\",\"flowFileConcurrency\":\"UNBOUNDED\",\"flowFileOutboundPolicy\":\"STREAM_WHEN_AVAILABLE\",\"funnels\":[],\"identifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"inputPorts\":[],\"instanceIdentifier\":\"43ce4132-0196-1000-7c0a-7ec9f0689782\",\"labels\":[],\"name\":\"TestPG0005\",\"outputPorts\":[],\"position\":{\"x\":480.0,\"y\":160.0},\"processGroups\":[],\"processors\":[{\"autoTerminatedRelationships\":[\"success\"],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-update-attribute-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"995071cd-d73b-31d7-800d-dfc40e4b0308\",\"instanceIdentifier\":\"43ce6f8c-0196-1000-b679-8474200670ba\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"UpdateAttribute\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":488.0,\"y\":256.0},\"properties\":{\"Store State\":\"Do not store state\",\"canonical-value-lookup-cache-size\":\"100\"},\"propertyDescriptors\":{\"Delete Attributes Expression\":{\"displayName\":\"Delete Attributes Expression\",\"identifiesControllerService\":false,\"name\":\"Delete Attributes Expression\",\"sensitive\":false},\"Store State\":{\"displayName\":\"Store State\",\"identifiesControllerService\":false,\"name\":\"Store State\",\"sensitive\":false},\"canonical-value-lookup-cache-size\":{\"displayName\":\"Cache Value Lookup Cache Size\",\"identifiesControllerService\":false,\"name\":\"canonical-value-lookup-cache-size\",\"sensitive\":false},\"Stateful Variables Initial Value\":{\"displayName\":\"Stateful Variables Initial Value\",\"identifiesControllerService\":false,\"name\":\"Stateful Variables Initial Value\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":25,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"0 sec\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.attributes.UpdateAttribute\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-standard-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"3ec352df-45d4-3b56-b9ae-e7af4844b09b\",\"instanceIdentifier\":\"43ce5e0a-0196-1000-d10b-cdbd5f0e5dee\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"GenerateFlowFile\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":487.0,\"y\":64.0},\"properties\":{\"character-set\":\"UTF-8\",\"File Size\":\"0B\",\"Batch Size\":\"1\",\"Unique FlowFiles\":\"false\",\"Data Format\":\"Text\"},\"propertyDescriptors\":{\"character-set\":{\"displayName\":\"Character Set\",\"identifiesControllerService\":false,\"name\":\"character-set\",\"sensitive\":false},\"File Size\":{\"displayName\":\"File Size\",\"identifiesControllerService\":false,\"name\":\"File Size\",\"sensitive\":false},\"mime-type\":{\"displayName\":\"Mime Type\",\"identifiesControllerService\":false,\"name\":\"mime-type\",\"sensitive\":false},\"generate-ff-custom-text\":{\"displayName\":\"Custom Text\",\"identifiesControllerService\":false,\"name\":\"generate-ff-custom-text\",\"sensitive\":false},\"Batch Size\":{\"displayName\":\"Batch Size\",\"identifiesControllerService\":false,\"name\":\"Batch Size\",\"sensitive\":false},\"Unique FlowFiles\":{\"displayName\":\"Unique FlowFiles\",\"identifiesControllerService\":false,\"name\":\"Unique FlowFiles\",\"sensitive\":false},\"Data Format\":{\"displayName\":\"Data Format\",\"identifiesControllerService\":false,\"name\":\"Data Format\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":0,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"1 min\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.standard.GenerateFlowFile\",\"yieldDuration\":\"1 sec\"}],\"remoteProcessGroups\":[],\"variables\":{}},\"flowEncodingVersion\":\"1.0\",\"parameterContexts\":{},\"parameterProviders\":{},\"snapshotMetadata\":{\"author\":\"test\",\"comments\":\"Initial version for flow 005\",\"timestamp\":1744894343392,\"version\":1}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create flow5 version2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.flow.name).to.eql(\"TestFlow0005\");\r",
+									"    pm.expect(jsonData.snapshotMetadata.version).to.eql(2);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"externalControllerServices\":{},\"flowContents\":{\"comments\":\"\",\"componentType\":\"PROCESS_GROUP\",\"connections\":[{\"backPressureDataSizeThreshold\":\"1 GB\",\"backPressureObjectThreshold\":10000,\"bends\":[],\"componentType\":\"CONNECTION\",\"destination\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"31c2c717-2106-371d-919a-60aed6135a75\",\"instanceIdentifier\":\"01961000-6f8c-13ce-3221-bb866b6d7b9f\",\"name\":\"UpdateAttribute1\",\"type\":\"PROCESSOR\"},\"flowFileExpiration\":\"0 sec\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"2c9613c5-13c4-39da-9e26-731a03769690\",\"instanceIdentifier\":\"01961000-7e2e-13ce-1f48-374918029769\",\"labelIndex\":1,\"loadBalanceCompression\":\"DO_NOT_COMPRESS\",\"loadBalanceStrategy\":\"DO_NOT_LOAD_BALANCE\",\"name\":\"\",\"partitioningAttribute\":\"\",\"prioritizers\":[],\"selectedRelationships\":[\"success\"],\"source\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"ff350dbb-337f-3019-bc88-69b1ccb7e853\",\"instanceIdentifier\":\"01961000-5e0a-13ce-17cd-c788334047b3\",\"name\":\"GenerateFlowFile1\",\"type\":\"PROCESSOR\"},\"zIndex\":0},{\"backPressureDataSizeThreshold\":\"1 GB\",\"backPressureObjectThreshold\":10000,\"bends\":[],\"componentType\":\"CONNECTION\",\"destination\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"995071cd-d73b-31d7-800d-dfc40e4b0308\",\"instanceIdentifier\":\"43ce6f8c-0196-1000-b679-8474200670ba\",\"name\":\"UpdateAttribute\",\"type\":\"PROCESSOR\"},\"flowFileExpiration\":\"0 sec\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"958ec51b-e7cf-39f0-afcb-a7a459ebeda5\",\"instanceIdentifier\":\"43ce7e2e-0196-1000-c3a0-ba6b0aa0f05e\",\"labelIndex\":1,\"loadBalanceCompression\":\"DO_NOT_COMPRESS\",\"loadBalanceStrategy\":\"DO_NOT_LOAD_BALANCE\",\"name\":\"\",\"partitioningAttribute\":\"\",\"prioritizers\":[],\"selectedRelationships\":[\"success\"],\"source\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"3ec352df-45d4-3b56-b9ae-e7af4844b09b\",\"instanceIdentifier\":\"43ce5e0a-0196-1000-d10b-cdbd5f0e5dee\",\"name\":\"GenerateFlowFile\",\"type\":\"PROCESSOR\"},\"zIndex\":0}],\"controllerServices\":[],\"defaultBackPressureDataSizeThreshold\":\"1 GB\",\"defaultBackPressureObjectThreshold\":10000,\"defaultFlowFileExpiration\":\"0 sec\",\"flowFileConcurrency\":\"UNBOUNDED\",\"flowFileOutboundPolicy\":\"STREAM_WHEN_AVAILABLE\",\"funnels\":[],\"identifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"inputPorts\":[],\"instanceIdentifier\":\"43ce4132-0196-1000-7c0a-7ec9f0689782\",\"labels\":[],\"name\":\"TestPG0005\",\"outputPorts\":[],\"position\":{\"x\":480.0,\"y\":160.0},\"processGroups\":[],\"processors\":[{\"autoTerminatedRelationships\":[\"success\"],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-update-attribute-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"995071cd-d73b-31d7-800d-dfc40e4b0308\",\"instanceIdentifier\":\"43ce6f8c-0196-1000-b679-8474200670ba\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"UpdateAttribute\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":488.0,\"y\":256.0},\"properties\":{\"Store State\":\"Do not store state\",\"canonical-value-lookup-cache-size\":\"100\"},\"propertyDescriptors\":{\"Delete Attributes Expression\":{\"displayName\":\"Delete Attributes Expression\",\"identifiesControllerService\":false,\"name\":\"Delete Attributes Expression\",\"sensitive\":false},\"Store State\":{\"displayName\":\"Store State\",\"identifiesControllerService\":false,\"name\":\"Store State\",\"sensitive\":false},\"canonical-value-lookup-cache-size\":{\"displayName\":\"Cache Value Lookup Cache Size\",\"identifiesControllerService\":false,\"name\":\"canonical-value-lookup-cache-size\",\"sensitive\":false},\"Stateful Variables Initial Value\":{\"displayName\":\"Stateful Variables Initial Value\",\"identifiesControllerService\":false,\"name\":\"Stateful Variables Initial Value\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":25,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"0 sec\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.attributes.UpdateAttribute\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-standard-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"ff350dbb-337f-3019-bc88-69b1ccb7e853\",\"instanceIdentifier\":\"01961000-5e0a-13ce-17cd-c788334047b3\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"GenerateFlowFile1\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":936.0,\"y\":64.0},\"properties\":{\"character-set\":\"UTF-8\",\"File Size\":\"0B\",\"Batch Size\":\"1\",\"Unique FlowFiles\":\"false\",\"Data Format\":\"Text\"},\"propertyDescriptors\":{\"character-set\":{\"displayName\":\"Character Set\",\"identifiesControllerService\":false,\"name\":\"character-set\",\"sensitive\":false},\"File Size\":{\"displayName\":\"File Size\",\"identifiesControllerService\":false,\"name\":\"File Size\",\"sensitive\":false},\"mime-type\":{\"displayName\":\"Mime Type\",\"identifiesControllerService\":false,\"name\":\"mime-type\",\"sensitive\":false},\"generate-ff-custom-text\":{\"displayName\":\"Custom Text\",\"identifiesControllerService\":false,\"name\":\"generate-ff-custom-text\",\"sensitive\":false},\"Batch Size\":{\"displayName\":\"Batch Size\",\"identifiesControllerService\":false,\"name\":\"Batch Size\",\"sensitive\":false},\"Unique FlowFiles\":{\"displayName\":\"Unique FlowFiles\",\"identifiesControllerService\":false,\"name\":\"Unique FlowFiles\",\"sensitive\":false},\"Data Format\":{\"displayName\":\"Data Format\",\"identifiesControllerService\":false,\"name\":\"Data Format\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":0,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"1 min\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.standard.GenerateFlowFile\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-standard-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"3ec352df-45d4-3b56-b9ae-e7af4844b09b\",\"instanceIdentifier\":\"43ce5e0a-0196-1000-d10b-cdbd5f0e5dee\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"GenerateFlowFile\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":487.0,\"y\":64.0},\"properties\":{\"character-set\":\"UTF-8\",\"File Size\":\"0B\",\"Batch Size\":\"1\",\"Unique FlowFiles\":\"false\",\"Data Format\":\"Text\"},\"propertyDescriptors\":{\"character-set\":{\"displayName\":\"Character Set\",\"identifiesControllerService\":false,\"name\":\"character-set\",\"sensitive\":false},\"File Size\":{\"displayName\":\"File Size\",\"identifiesControllerService\":false,\"name\":\"File Size\",\"sensitive\":false},\"mime-type\":{\"displayName\":\"Mime Type\",\"identifiesControllerService\":false,\"name\":\"mime-type\",\"sensitive\":false},\"generate-ff-custom-text\":{\"displayName\":\"Custom Text\",\"identifiesControllerService\":false,\"name\":\"generate-ff-custom-text\",\"sensitive\":false},\"Batch Size\":{\"displayName\":\"Batch Size\",\"identifiesControllerService\":false,\"name\":\"Batch Size\",\"sensitive\":false},\"Unique FlowFiles\":{\"displayName\":\"Unique FlowFiles\",\"identifiesControllerService\":false,\"name\":\"Unique FlowFiles\",\"sensitive\":false},\"Data Format\":{\"displayName\":\"Data Format\",\"identifiesControllerService\":false,\"name\":\"Data Format\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":0,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"1 min\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.standard.GenerateFlowFile\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[\"success\"],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-update-attribute-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"31c2c717-2106-371d-919a-60aed6135a75\",\"instanceIdentifier\":\"01961000-6f8c-13ce-3221-bb866b6d7b9f\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"UpdateAttribute1\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":936.0,\"y\":256.0},\"properties\":{\"Store State\":\"Do not store state\",\"canonical-value-lookup-cache-size\":\"100\"},\"propertyDescriptors\":{\"Delete Attributes Expression\":{\"displayName\":\"Delete Attributes Expression\",\"identifiesControllerService\":false,\"name\":\"Delete Attributes Expression\",\"sensitive\":false},\"Store State\":{\"displayName\":\"Store State\",\"identifiesControllerService\":false,\"name\":\"Store State\",\"sensitive\":false},\"canonical-value-lookup-cache-size\":{\"displayName\":\"Cache Value Lookup Cache Size\",\"identifiesControllerService\":false,\"name\":\"canonical-value-lookup-cache-size\",\"sensitive\":false},\"Stateful Variables Initial Value\":{\"displayName\":\"Stateful Variables Initial Value\",\"identifiesControllerService\":false,\"name\":\"Stateful Variables Initial Value\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":25,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"0 sec\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.attributes.UpdateAttribute\",\"yieldDuration\":\"1 sec\"}],\"remoteProcessGroups\":[],\"variables\":{}},\"flowEncodingVersion\":\"1.0\",\"parameterContexts\":{},\"parameterProviders\":{},\"snapshotMetadata\":{\"author\":\"test\",\"comments\":\"Modified version2 with additional processors\",\"timestamp\":1744894370461,\"version\":2}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow5 version2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.flow.name).to.eql(\"TestFlow0005\");\r",
+									"    pm.expect(jsonData.snapshotMetadata.version).to.eql(2);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions/2",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow5 version3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Response is text and contains error message\", function () {\r",
+									"    var textData = pm.response.text();\r",
+									"    pm.expect(textData).to.eql(\"The specified versioned flow snapshot does not exist for this flow.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions/3",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow5 diff v1-v2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some diff data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.componentDifferenceGroups.length).to.eql(3);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/diff/1/2",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"diff",
+								"1",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow5 versions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains 2 versions\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(2);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow5 latest version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains version 2\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.snapshotMetadata.version).to.eql(2);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions/latest",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions",
+								"latest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow5 latest version metadata",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains version 2\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.version).to.eql(2);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions/latest/metadata",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions",
+								"latest",
+								"metadata"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import flow5 version3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.flow.name).to.eql(\"TestFlow0005\");\r",
+									"    pm.expect(jsonData.snapshotMetadata.version).to.eql(3);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"externalControllerServices\":{},\"flowContents\":{\"comments\":\"\",\"componentType\":\"PROCESS_GROUP\",\"connections\":[{\"backPressureDataSizeThreshold\":\"1 GB\",\"backPressureObjectThreshold\":10000,\"bends\":[],\"componentType\":\"CONNECTION\",\"destination\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"31c2c717-2106-371d-919a-60aed6135a75\",\"instanceIdentifier\":\"01961000-6f8c-13ce-3221-bb866b6d7b9f\",\"name\":\"UpdateAttribute1\",\"type\":\"PROCESSOR\"},\"flowFileExpiration\":\"0 sec\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"2c9613c5-13c4-39da-9e26-731a03769690\",\"instanceIdentifier\":\"01961000-7e2e-13ce-1f48-374918029769\",\"labelIndex\":1,\"loadBalanceCompression\":\"DO_NOT_COMPRESS\",\"loadBalanceStrategy\":\"DO_NOT_LOAD_BALANCE\",\"name\":\"\",\"partitioningAttribute\":\"\",\"prioritizers\":[],\"selectedRelationships\":[\"success\"],\"source\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"ff350dbb-337f-3019-bc88-69b1ccb7e853\",\"instanceIdentifier\":\"01961000-5e0a-13ce-17cd-c788334047b3\",\"name\":\"GenerateFlowFile1\",\"type\":\"PROCESSOR\"},\"zIndex\":0},{\"backPressureDataSizeThreshold\":\"1 GB\",\"backPressureObjectThreshold\":10000,\"bends\":[],\"componentType\":\"CONNECTION\",\"destination\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"995071cd-d73b-31d7-800d-dfc40e4b0308\",\"instanceIdentifier\":\"43ce6f8c-0196-1000-b679-8474200670ba\",\"name\":\"UpdateAttribute\",\"type\":\"PROCESSOR\"},\"flowFileExpiration\":\"0 sec\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"958ec51b-e7cf-39f0-afcb-a7a459ebeda5\",\"instanceIdentifier\":\"43ce7e2e-0196-1000-c3a0-ba6b0aa0f05e\",\"labelIndex\":1,\"loadBalanceCompression\":\"DO_NOT_COMPRESS\",\"loadBalanceStrategy\":\"DO_NOT_LOAD_BALANCE\",\"name\":\"\",\"partitioningAttribute\":\"\",\"prioritizers\":[],\"selectedRelationships\":[\"success\"],\"source\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"3ec352df-45d4-3b56-b9ae-e7af4844b09b\",\"instanceIdentifier\":\"43ce5e0a-0196-1000-d10b-cdbd5f0e5dee\",\"name\":\"GenerateFlowFile\",\"type\":\"PROCESSOR\"},\"zIndex\":0}],\"controllerServices\":[],\"defaultBackPressureDataSizeThreshold\":\"1 GB\",\"defaultBackPressureObjectThreshold\":10000,\"defaultFlowFileExpiration\":\"0 sec\",\"flowFileConcurrency\":\"UNBOUNDED\",\"flowFileOutboundPolicy\":\"STREAM_WHEN_AVAILABLE\",\"funnels\":[],\"identifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"inputPorts\":[],\"instanceIdentifier\":\"43ce4132-0196-1000-7c0a-7ec9f0689782\",\"labels\":[],\"name\":\"TestPG0005\",\"outputPorts\":[],\"position\":{\"x\":480.0,\"y\":160.0},\"processGroups\":[],\"processors\":[{\"autoTerminatedRelationships\":[\"success\"],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-update-attribute-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"995071cd-d73b-31d7-800d-dfc40e4b0308\",\"instanceIdentifier\":\"43ce6f8c-0196-1000-b679-8474200670ba\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"UpdateAttribute\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":488.0,\"y\":256.0},\"properties\":{\"Store State\":\"Do not store state\",\"canonical-value-lookup-cache-size\":\"100\"},\"propertyDescriptors\":{\"Delete Attributes Expression\":{\"displayName\":\"Delete Attributes Expression\",\"identifiesControllerService\":false,\"name\":\"Delete Attributes Expression\",\"sensitive\":false},\"Store State\":{\"displayName\":\"Store State\",\"identifiesControllerService\":false,\"name\":\"Store State\",\"sensitive\":false},\"canonical-value-lookup-cache-size\":{\"displayName\":\"Cache Value Lookup Cache Size\",\"identifiesControllerService\":false,\"name\":\"canonical-value-lookup-cache-size\",\"sensitive\":false},\"Stateful Variables Initial Value\":{\"displayName\":\"Stateful Variables Initial Value\",\"identifiesControllerService\":false,\"name\":\"Stateful Variables Initial Value\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":25,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"0 sec\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.attributes.UpdateAttribute\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-standard-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"ff350dbb-337f-3019-bc88-69b1ccb7e853\",\"instanceIdentifier\":\"01961000-5e0a-13ce-17cd-c788334047b3\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"GenerateFlowFile1\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":936.0,\"y\":64.0},\"properties\":{\"character-set\":\"UTF-8\",\"File Size\":\"0B\",\"Batch Size\":\"1\",\"Unique FlowFiles\":\"false\",\"Data Format\":\"Text\"},\"propertyDescriptors\":{\"character-set\":{\"displayName\":\"Character Set\",\"identifiesControllerService\":false,\"name\":\"character-set\",\"sensitive\":false},\"File Size\":{\"displayName\":\"File Size\",\"identifiesControllerService\":false,\"name\":\"File Size\",\"sensitive\":false},\"mime-type\":{\"displayName\":\"Mime Type\",\"identifiesControllerService\":false,\"name\":\"mime-type\",\"sensitive\":false},\"generate-ff-custom-text\":{\"displayName\":\"Custom Text\",\"identifiesControllerService\":false,\"name\":\"generate-ff-custom-text\",\"sensitive\":false},\"Batch Size\":{\"displayName\":\"Batch Size\",\"identifiesControllerService\":false,\"name\":\"Batch Size\",\"sensitive\":false},\"Unique FlowFiles\":{\"displayName\":\"Unique FlowFiles\",\"identifiesControllerService\":false,\"name\":\"Unique FlowFiles\",\"sensitive\":false},\"Data Format\":{\"displayName\":\"Data Format\",\"identifiesControllerService\":false,\"name\":\"Data Format\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":0,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"1 min\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.standard.GenerateFlowFile\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-standard-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"3ec352df-45d4-3b56-b9ae-e7af4844b09b\",\"instanceIdentifier\":\"43ce5e0a-0196-1000-d10b-cdbd5f0e5dee\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"GenerateFlowFile\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":487.0,\"y\":64.0},\"properties\":{\"character-set\":\"UTF-8\",\"File Size\":\"0B\",\"Batch Size\":\"1\",\"Unique FlowFiles\":\"false\",\"Data Format\":\"Text\"},\"propertyDescriptors\":{\"character-set\":{\"displayName\":\"Character Set\",\"identifiesControllerService\":false,\"name\":\"character-set\",\"sensitive\":false},\"File Size\":{\"displayName\":\"File Size\",\"identifiesControllerService\":false,\"name\":\"File Size\",\"sensitive\":false},\"mime-type\":{\"displayName\":\"Mime Type\",\"identifiesControllerService\":false,\"name\":\"mime-type\",\"sensitive\":false},\"generate-ff-custom-text\":{\"displayName\":\"Custom Text\",\"identifiesControllerService\":false,\"name\":\"generate-ff-custom-text\",\"sensitive\":false},\"Batch Size\":{\"displayName\":\"Batch Size\",\"identifiesControllerService\":false,\"name\":\"Batch Size\",\"sensitive\":false},\"Unique FlowFiles\":{\"displayName\":\"Unique FlowFiles\",\"identifiesControllerService\":false,\"name\":\"Unique FlowFiles\",\"sensitive\":false},\"Data Format\":{\"displayName\":\"Data Format\",\"identifiesControllerService\":false,\"name\":\"Data Format\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":0,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"1 min\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.standard.GenerateFlowFile\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[\"success\"],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-update-attribute-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"31c2c717-2106-371d-919a-60aed6135a75\",\"instanceIdentifier\":\"01961000-6f8c-13ce-3221-bb866b6d7b9f\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"UpdateAttribute1\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":936.0,\"y\":256.0},\"properties\":{\"Store State\":\"Do not store state\",\"canonical-value-lookup-cache-size\":\"100\"},\"propertyDescriptors\":{\"Delete Attributes Expression\":{\"displayName\":\"Delete Attributes Expression\",\"identifiesControllerService\":false,\"name\":\"Delete Attributes Expression\",\"sensitive\":false},\"Store State\":{\"displayName\":\"Store State\",\"identifiesControllerService\":false,\"name\":\"Store State\",\"sensitive\":false},\"canonical-value-lookup-cache-size\":{\"displayName\":\"Cache Value Lookup Cache Size\",\"identifiesControllerService\":false,\"name\":\"canonical-value-lookup-cache-size\",\"sensitive\":false},\"Stateful Variables Initial Value\":{\"displayName\":\"Stateful Variables Initial Value\",\"identifiesControllerService\":false,\"name\":\"Stateful Variables Initial Value\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":25,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"0 sec\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.attributes.UpdateAttribute\",\"yieldDuration\":\"1 sec\"}],\"remoteProcessGroups\":[],\"variables\":{}},\"flowEncodingVersion\":\"1.0\",\"parameterContexts\":{},\"parameterProviders\":{},\"snapshotMetadata\":{\"author\":\"test\",\"comments\":\"Modified version3 with additional processors\",\"timestamp\":1744894370461,\"version\":3}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions/import",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions",
+								"import"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import flow5 version4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains some data\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.flow.name).to.eql(\"TestFlow0005\");\r",
+									"    pm.expect(jsonData.snapshotMetadata.version).to.eql(4);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"externalControllerServices\":{},\"flowContents\":{\"comments\":\"\",\"componentType\":\"PROCESS_GROUP\",\"connections\":[{\"backPressureDataSizeThreshold\":\"1 GB\",\"backPressureObjectThreshold\":10000,\"bends\":[],\"componentType\":\"CONNECTION\",\"destination\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"31c2c717-2106-371d-919a-60aed6135a75\",\"instanceIdentifier\":\"01961000-6f8c-13ce-3221-bb866b6d7b9f\",\"name\":\"UpdateAttribute1\",\"type\":\"PROCESSOR\"},\"flowFileExpiration\":\"0 sec\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"2c9613c5-13c4-39da-9e26-731a03769690\",\"instanceIdentifier\":\"01961000-7e2e-13ce-1f48-374918029769\",\"labelIndex\":1,\"loadBalanceCompression\":\"DO_NOT_COMPRESS\",\"loadBalanceStrategy\":\"DO_NOT_LOAD_BALANCE\",\"name\":\"\",\"partitioningAttribute\":\"\",\"prioritizers\":[],\"selectedRelationships\":[\"success\"],\"source\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"ff350dbb-337f-3019-bc88-69b1ccb7e853\",\"instanceIdentifier\":\"01961000-5e0a-13ce-17cd-c788334047b3\",\"name\":\"GenerateFlowFile1\",\"type\":\"PROCESSOR\"},\"zIndex\":0},{\"backPressureDataSizeThreshold\":\"1 GB\",\"backPressureObjectThreshold\":10000,\"bends\":[],\"componentType\":\"CONNECTION\",\"destination\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"995071cd-d73b-31d7-800d-dfc40e4b0308\",\"instanceIdentifier\":\"43ce6f8c-0196-1000-b679-8474200670ba\",\"name\":\"UpdateAttribute\",\"type\":\"PROCESSOR\"},\"flowFileExpiration\":\"0 sec\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"958ec51b-e7cf-39f0-afcb-a7a459ebeda5\",\"instanceIdentifier\":\"43ce7e2e-0196-1000-c3a0-ba6b0aa0f05e\",\"labelIndex\":1,\"loadBalanceCompression\":\"DO_NOT_COMPRESS\",\"loadBalanceStrategy\":\"DO_NOT_LOAD_BALANCE\",\"name\":\"\",\"partitioningAttribute\":\"\",\"prioritizers\":[],\"selectedRelationships\":[\"success\"],\"source\":{\"comments\":\"\",\"groupId\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"id\":\"3ec352df-45d4-3b56-b9ae-e7af4844b09b\",\"instanceIdentifier\":\"43ce5e0a-0196-1000-d10b-cdbd5f0e5dee\",\"name\":\"GenerateFlowFile\",\"type\":\"PROCESSOR\"},\"zIndex\":0}],\"controllerServices\":[],\"defaultBackPressureDataSizeThreshold\":\"1 GB\",\"defaultBackPressureObjectThreshold\":10000,\"defaultFlowFileExpiration\":\"0 sec\",\"flowFileConcurrency\":\"UNBOUNDED\",\"flowFileOutboundPolicy\":\"STREAM_WHEN_AVAILABLE\",\"funnels\":[],\"identifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"inputPorts\":[],\"instanceIdentifier\":\"43ce4132-0196-1000-7c0a-7ec9f0689782\",\"labels\":[],\"name\":\"TestPG0005\",\"outputPorts\":[],\"position\":{\"x\":480.0,\"y\":160.0},\"processGroups\":[],\"processors\":[{\"autoTerminatedRelationships\":[\"success\"],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-update-attribute-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"995071cd-d73b-31d7-800d-dfc40e4b0308\",\"instanceIdentifier\":\"43ce6f8c-0196-1000-b679-8474200670ba\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"UpdateAttribute\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":488.0,\"y\":256.0},\"properties\":{\"Store State\":\"Do not store state\",\"canonical-value-lookup-cache-size\":\"100\"},\"propertyDescriptors\":{\"Delete Attributes Expression\":{\"displayName\":\"Delete Attributes Expression\",\"identifiesControllerService\":false,\"name\":\"Delete Attributes Expression\",\"sensitive\":false},\"Store State\":{\"displayName\":\"Store State\",\"identifiesControllerService\":false,\"name\":\"Store State\",\"sensitive\":false},\"canonical-value-lookup-cache-size\":{\"displayName\":\"Cache Value Lookup Cache Size\",\"identifiesControllerService\":false,\"name\":\"canonical-value-lookup-cache-size\",\"sensitive\":false},\"Stateful Variables Initial Value\":{\"displayName\":\"Stateful Variables Initial Value\",\"identifiesControllerService\":false,\"name\":\"Stateful Variables Initial Value\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":25,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"0 sec\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.attributes.UpdateAttribute\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-standard-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"ff350dbb-337f-3019-bc88-69b1ccb7e853\",\"instanceIdentifier\":\"01961000-5e0a-13ce-17cd-c788334047b3\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"GenerateFlowFile1\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":936.0,\"y\":64.0},\"properties\":{\"character-set\":\"UTF-8\",\"File Size\":\"0B\",\"Batch Size\":\"1\",\"Unique FlowFiles\":\"false\",\"Data Format\":\"Text\"},\"propertyDescriptors\":{\"character-set\":{\"displayName\":\"Character Set\",\"identifiesControllerService\":false,\"name\":\"character-set\",\"sensitive\":false},\"File Size\":{\"displayName\":\"File Size\",\"identifiesControllerService\":false,\"name\":\"File Size\",\"sensitive\":false},\"mime-type\":{\"displayName\":\"Mime Type\",\"identifiesControllerService\":false,\"name\":\"mime-type\",\"sensitive\":false},\"generate-ff-custom-text\":{\"displayName\":\"Custom Text\",\"identifiesControllerService\":false,\"name\":\"generate-ff-custom-text\",\"sensitive\":false},\"Batch Size\":{\"displayName\":\"Batch Size\",\"identifiesControllerService\":false,\"name\":\"Batch Size\",\"sensitive\":false},\"Unique FlowFiles\":{\"displayName\":\"Unique FlowFiles\",\"identifiesControllerService\":false,\"name\":\"Unique FlowFiles\",\"sensitive\":false},\"Data Format\":{\"displayName\":\"Data Format\",\"identifiesControllerService\":false,\"name\":\"Data Format\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":0,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"1 min\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.standard.GenerateFlowFile\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-standard-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"3ec352df-45d4-3b56-b9ae-e7af4844b09b\",\"instanceIdentifier\":\"43ce5e0a-0196-1000-d10b-cdbd5f0e5dee\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"GenerateFlowFile\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":487.0,\"y\":64.0},\"properties\":{\"character-set\":\"UTF-8\",\"File Size\":\"0B\",\"Batch Size\":\"1\",\"Unique FlowFiles\":\"false\",\"Data Format\":\"Text\"},\"propertyDescriptors\":{\"character-set\":{\"displayName\":\"Character Set\",\"identifiesControllerService\":false,\"name\":\"character-set\",\"sensitive\":false},\"File Size\":{\"displayName\":\"File Size\",\"identifiesControllerService\":false,\"name\":\"File Size\",\"sensitive\":false},\"mime-type\":{\"displayName\":\"Mime Type\",\"identifiesControllerService\":false,\"name\":\"mime-type\",\"sensitive\":false},\"generate-ff-custom-text\":{\"displayName\":\"Custom Text\",\"identifiesControllerService\":false,\"name\":\"generate-ff-custom-text\",\"sensitive\":false},\"Batch Size\":{\"displayName\":\"Batch Size\",\"identifiesControllerService\":false,\"name\":\"Batch Size\",\"sensitive\":false},\"Unique FlowFiles\":{\"displayName\":\"Unique FlowFiles\",\"identifiesControllerService\":false,\"name\":\"Unique FlowFiles\",\"sensitive\":false},\"Data Format\":{\"displayName\":\"Data Format\",\"identifiesControllerService\":false,\"name\":\"Data Format\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":0,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"1 min\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.standard.GenerateFlowFile\",\"yieldDuration\":\"1 sec\"},{\"autoTerminatedRelationships\":[\"success\"],\"backoffMechanism\":\"PENALIZE_FLOWFILE\",\"bulletinLevel\":\"WARN\",\"bundle\":{\"artifact\":\"nifi-update-attribute-nar\",\"group\":\"org.apache.nifi\",\"version\":\"1.28.1\"},\"comments\":\"\",\"componentType\":\"PROCESSOR\",\"concurrentlySchedulableTaskCount\":1,\"executionNode\":\"ALL\",\"groupIdentifier\":\"d43bd07d-cd92-328d-8bf5-eb91c3bc0c88\",\"identifier\":\"31c2c717-2106-371d-919a-60aed6135a75\",\"instanceIdentifier\":\"01961000-6f8c-13ce-3221-bb866b6d7b9f\",\"maxBackoffPeriod\":\"10 mins\",\"name\":\"UpdateAttribute1\",\"penaltyDuration\":\"30 sec\",\"position\":{\"x\":936.0,\"y\":256.0},\"properties\":{\"Store State\":\"Do not store state\",\"canonical-value-lookup-cache-size\":\"100\"},\"propertyDescriptors\":{\"Delete Attributes Expression\":{\"displayName\":\"Delete Attributes Expression\",\"identifiesControllerService\":false,\"name\":\"Delete Attributes Expression\",\"sensitive\":false},\"Store State\":{\"displayName\":\"Store State\",\"identifiesControllerService\":false,\"name\":\"Store State\",\"sensitive\":false},\"canonical-value-lookup-cache-size\":{\"displayName\":\"Cache Value Lookup Cache Size\",\"identifiesControllerService\":false,\"name\":\"canonical-value-lookup-cache-size\",\"sensitive\":false},\"Stateful Variables Initial Value\":{\"displayName\":\"Stateful Variables Initial Value\",\"identifiesControllerService\":false,\"name\":\"Stateful Variables Initial Value\",\"sensitive\":false}},\"retriedRelationships\":[],\"retryCount\":10,\"runDurationMillis\":25,\"scheduledState\":\"ENABLED\",\"schedulingPeriod\":\"0 sec\",\"schedulingStrategy\":\"TIMER_DRIVEN\",\"style\":{},\"type\":\"org.apache.nifi.processors.attributes.UpdateAttribute\",\"yieldDuration\":\"1 sec\"}],\"remoteProcessGroups\":[],\"variables\":{}},\"flowEncodingVersion\":\"1.0\",\"parameterContexts\":{},\"parameterProviders\":{},\"snapshotMetadata\":{\"author\":\"test\",\"comments\":\"Modified version3 with additional processors\",\"timestamp\":1744894370461,\"version\":3}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions/import",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions",
+								"import"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow5 latest version metadata Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response is JSON and contains version 4\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.version).to.eql(4);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nifi.registry.url}}/nifi-registry-api/buckets/{{registry.bucket1.id}}/flows/{{registry.flow5.id}}/versions/latest/metadata",
+							"host": [
+								"{{nifi.registry.url}}"
+							],
+							"path": [
+								"nifi-registry-api",
+								"buckets",
+								"{{registry.bucket1.id}}",
+								"flows",
+								"{{registry.flow5.id}}",
+								"versions",
+								"latest",
+								"metadata"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

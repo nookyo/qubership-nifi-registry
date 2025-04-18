@@ -36,7 +36,18 @@ runs:
         wait_nifi_reg_container "localhost" "18080" ".github/docker/oidc/docker-compose.yaml" "true" \
           "5" "40" "${{ inputs.results-dir }}" "./temp-vol/tls-cert/nifi/nifi-cert.pem" \
           "./temp-vol/tls-cert/nifi/CN=admin_OU=NIFI.p12" "$NIFI_CLIENT_PASSWORD"
-    - name: Run nifi registry API tests
+    - name: Run nifi registry policy API tests
+      continue-on-error: true
+      uses: ./.github/actions/run-newman-tests
+      with:
+        collection-name: 'NiFi_Registry_Policy_API_Tests.postman_collection.json'
+        env-name: 'NiFi_Reg_AT_TLS.json.postman_environment'
+        results-dir: '${{ inputs.results-dir }}'
+        short-name: 'main-tests'
+        tls-certs-dir: "./temp-vol/tls-cert"
+        tls-ca-certs: "nifi/nifi-cert.pem"
+        tls-client-certs-config: "newman-tls-config.json"
+    - name: Run nifi registry main API tests
       continue-on-error: true
       uses: ./.github/actions/run-newman-tests
       with:
