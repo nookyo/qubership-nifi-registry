@@ -9,11 +9,11 @@ services:
       - tls-cert:/tmp/tls-certs
       - tls-scripts:/tmp/tls-scripts
     environment:
-      - KEYSTORE_PASSWORD_NIFI=${KEYSTORE_PASSWORD_NIFI}
-      - KEYSTORE_PASSWORD_NIFI_REG=${KEYSTORE_PASSWORD_NIFI_REG}
+      - KEYSTORE_PASSWORD_NIFI=${KEYSTORE_PASSWORD}
+      - KEYSTORE_PASSWORD_NIFI_REG=${KEYSTORE_PASSWORD}
       - TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
   nifi-registry:
-    image: local-nifi-registry:test
+    image: ghcr.io/netcracker/nifi-registry:latest
     restart: always
     depends_on:
       nifi-toolkit:
@@ -34,7 +34,7 @@ services:
       - NIFI_REGISTRY_WEB_HTTP_HOST=0.0.0.0
       - KEYSTORE_PATH=/tmp/tls-certs/keystore.p12
       - KEYSTORE_TYPE=PKCS12
-      - KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD_NIFI_REG}
+      - KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
       - TRUSTSTORE_PATH=/tmp/tls-certs/truststore.p12
       - TRUSTSTORE_TYPE=PKCS12
       - TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
@@ -48,11 +48,6 @@ services:
       - "OIDC_DISCOVERY_URL_NEW=http://keycloak:8080/realms/nifi-test-realm/.well-known/openid-configuration"
     container_name: local-nifi-registry-oidc
     hostname: nifi-registry
-  consul:
-    image: hashicorp/consul:1.20
-    ports:
-      - 127.0.0.1:8500:8500
-    hostname: consul
   postgresql:
     image: postgres:16.8
     volumes:
@@ -93,7 +88,7 @@ services:
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: ${DB_PASSWORD}
     ports:
-      - 28080:8080
+      - 127.0.0.1:28080:8080
     command:
       - start-dev
       - "--import-realm"
@@ -107,7 +102,7 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: $BASE_DIR/.github/workflows/sh/
+      device: $GIT_REPO_DIR/.github/workflows/sh/
   tls-cert:
     driver: local
     driver_opts:
@@ -131,10 +126,10 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: $BASE_DIR/.github/configuration/postgres/oidc/
+      device: $GIT_REPO_DIR/dev/oidc/configuration/postgres/oidc/
   keycloak-init:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: $BASE_DIR/.github/configuration/keycloak/
+      device: $GIT_REPO_DIR/dev/oidc/configuration/keycloak/

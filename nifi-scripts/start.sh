@@ -122,6 +122,12 @@ info "Create or Retrieve DataSource Initiated..."
 info "Checking whether to use PostgreSQL or not. Value is $NIFI_REG_USE_PGDB"
 if [ "$NIFI_REG_USE_PGDB" = 'true' ]; then
     [ -f "${scripts_dir}/GetDBConnectionDetails.sh" ] && . "${scripts_dir}/GetDBConnectionDetails.sh"
+    # if GetDBConnectionDetails is missing, then use environment variables to define DB connection parameters
+    if [ ! -f "${scripts_dir}/GetDBConnectionDetails.sh" ]; then
+      [ -n "$NIFI_REG_DB_URL" ] && dbUrl="$NIFI_REG_DB_URL"
+      [ -n "$NIFI_REG_DB_USERNAME" ] && dbUsername="$NIFI_REG_DB_USERNAME"
+      [ -n "$NIFI_REG_DB_PASSWORD" ] && dbPassword="$NIFI_REG_DB_PASSWORD"
+    fi
     "${JAVA_HOME}"/bin/java -jar "${NIFI_REGISTRY_HOME}"/db_schema_gen/nifi-registry-util.jar "$dbUrl" "$dbUsername" "$dbPassword" "${NIFI_REG_MIGRATE_TO_DB}"
     . "${scripts_dir}/connect_to_db.sh"
     info "Configuring providers and authorizers to use Database"
