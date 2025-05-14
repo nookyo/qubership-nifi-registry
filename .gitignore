@@ -8,6 +8,9 @@
 .idea/**
 *.iml
 
+# Drawio backups:
+docs/drawio/*.bkp
+
 # Sensitive or high-churn files:
 .idea/**/dataSources/
 .idea/**/dataSources.ids
