@@ -14,22 +14,17 @@ services:
       - TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
   nifi-registry:
     image: local-nifi-registry:test
-    restart: always
     depends_on:
       nifi-toolkit:
         condition: service_completed_successfully
       postgresql:
-        condition: service_started
-      postgresql-init:
-        condition: service_completed_successfully
-      keycloak:
         condition: service_started
     volumes:
       - tls-cert-reg:/tmp/tls-certs
     ports:
       - 127.0.0.1:18080:18080
     environment:
-      - AUTH=oidc
+      - AUTH=tls
       - NIFI_REGISTRY_WEB_HTTPS_PORT=18080
       - NIFI_REGISTRY_WEB_HTTP_HOST=0.0.0.0
       - KEYSTORE_PATH=/tmp/tls-certs/keystore.p12
@@ -40,14 +35,11 @@ services:
       - TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
       - INITIAL_ADMIN_IDENTITY=CN=admin, OU=NIFI
       - NIFI_REG_USE_PGDB=true
-      - NIFI_REG_DB_URL=jdbc:postgresql://postgresql:5432/postgres
-      - NIFI_REG_DB_USERNAME=postgres
-      - NIFI_REG_DB_PASSWORD=${DB_PASSWORD}
-      - OIDC_CLIENT_ID=frontend
-      - OIDC_CLIENT_SECRET=frontend
-      - "OIDC_DISCOVERY_URL_NEW=http://keycloak:8080/realms/nifi-test-realm/.well-known/openid-configuration"
-      - NIFI_REG_DB_FLOW_AUTHORIZERS=cached
-    container_name: local-nifi-registry-oidc
+      - NIFI_REG_DB_FLOW_AUTHORIZERS=standard
+      - dbUrl=jdbc:postgresql://postgresql:5432/postgres
+      - dbUsername=postgres
+      - dbPassword=${DB_PASSWORD}
+    container_name: local-nifi-registry-tls-db
     hostname: nifi-registry
   consul:
     image: hashicorp/consul:1.20
@@ -63,45 +55,6 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     container_name: postgresql
     hostname: postgresql
-  postgresql-init:
-    image: postgres:16.8
-    restart: on-failure:30
-    depends_on:
-      postgresql:
-        condition: service_started
-    volumes:
-      - pg-init-db:/tmp/init-scripts/
-    environment:
-      - PGPASSWORD=${DB_PASSWORD}
-    entrypoint: psql
-    command: "-h postgresql -p 5432 -U postgres -f /tmp/init-scripts/init.sql"
-  keycloak:
-    image: keycloak/keycloak:26.1.4
-    hostname: keycloak
-    restart: on-failure:3
-    depends_on:
-      postgresql:
-        condition: service_started
-      postgresql-init:
-        condition: service_completed_successfully
-    volumes:
-      - keycloak-init:/opt/keycloak/data/import
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgresql:5432/keycloak
-      KC_DB_USERNAME: postgres
-      KC_DB_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - 28080:8080
-    command:
-      - start-dev
-      - "--import-realm"
-      - "--hostname"
-      - "http://localhost:28080"
-      - "--hostname-backchannel-dynamic"
-      - "true"
 volumes:
   tls-scripts:
     driver: local
@@ -126,16 +79,4 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: $BASE_DIR/temp-vol/pg-db
-  pg-init-db:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: $BASE_DIR/.github/configuration/postgres/oidc/
-  keycloak-init:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: $BASE_DIR/.github/configuration/keycloak/
+      device: $BASE_DIR/temp-vol/pg-db/

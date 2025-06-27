@@ -71,8 +71,10 @@ jobs:
         uses: ./.github/actions/run-nifi-reg-tests-plain
       - name: Run tests for nifi-registry in TLS mode
         uses: ./.github/actions/run-nifi-reg-tests-tls
-      - name: Run tests for nifi-registry in TLS mode with PG option
+      - name: Run tests for nifi-registry in TLS mode with PG option and cached authorizers
         uses: ./.github/actions/run-nifi-reg-tests-tls-db
+      - name: Run tests for nifi-registry in TLS mode with PG option and standard authorizers
+        uses: ./.github/actions/run-nifi-reg-tests-tls-db-std
       - name: Run tests for nifi-registry in OIDC mode
         uses: ./.github/actions/run-nifi-reg-tests-oidc
       - name: Verify test results
@@ -81,7 +83,7 @@ jobs:
           echo "Checking test results for failures..."
           failed_cnt=$(find ./test-results -name "failed_*.lst" | wc -l)
           echo "Found failed steps = $failed_cnt"
-          if [ "$failed_cnt" == "0" ]; then 
+          if [ "$failed_cnt" == "0" ]; then
             echo "All tests were successful!"
           else
             echo "Some tests ($failed_cnt) failed. Marking as failure."
@@ -95,4 +97,4 @@ jobs:
           path: |
             ./test-results
           retention-days: 2
-      
+

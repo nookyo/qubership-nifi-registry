@@ -20,7 +20,7 @@ USER root
 RUN apk add --no-cache \
     jq=1.7.1-r0 \
     bash=5.2.26-r0
-    
+
 ENV NIFI_REGISTRY_BASE_DIR /opt/nifi-registry
 ENV NIFI_REGISTRY_HOME $NIFI_REGISTRY_BASE_DIR/nifi-registry-current
 ENV NIFI_TOOLKIT_HOME ${NIFI_REGISTRY_BASE_DIR}/nifi-toolkit-current
@@ -72,6 +72,9 @@ RUN rm -rf $NIFI_TOOLKIT_HOME/lib/spring-web-*.jar \
     && rm -rf $NIFI_TOOLKIT_HOME/lib/velocity-engine-core*.jar \
     && rm -rf $NIFI_TOOLKIT_HOME/lib/testng*.jar \
     && rm -rf $NIFI_TOOLKIT_HOME/lib/zookeeper*.jar
+
+RUN mkdir -p ${NIFI_REGISTRY_HOME}/ext-cached
+COPY --chown=1000:1000 qubership-cached-providers/target/qubership-cached-providers-*.jar qubership-cached-providers/target/lib/*.jar ${NIFI_REGISTRY_HOME}/ext-cached/
 
 FROM base
 LABEL org.opencontainers.image.authors="qubership.org"
