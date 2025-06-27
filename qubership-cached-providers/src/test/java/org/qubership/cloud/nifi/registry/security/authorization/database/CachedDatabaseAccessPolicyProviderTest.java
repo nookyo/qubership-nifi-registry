@@ -17,12 +17,12 @@ import org.apache.nifi.registry.util.PropertyValue;
 import org.apache.nifi.registry.util.StandardPropertyValue;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.qubership.cloud.nifi.registry.security.authorization.database.mappers.MapperUtils;
 import org.qubership.cloud.nifi.registry.security.authorization.database.model.PolicyKey;
+import org.springframework.dao.DuplicateKeyException;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -73,10 +73,6 @@ public class CachedDatabaseAccessPolicyProviderTest {
         hikariConfig.setMaximumPoolSize(10);
         hikariConfig.setLeakDetectionThreshold(4000);
         dataSource = new HikariDataSource(hikariConfig);
-    }
-
-    @BeforeAll
-    public static void setUpForAll() {
     }
 
     @AfterAll
@@ -351,6 +347,14 @@ public class CachedDatabaseAccessPolicyProviderTest {
         Assertions.assertEquals(expected.getGroups(), actual.getGroups());
     }
 
+    private void assertDefaultAdminPoliciesExist(String resource,
+                                                Set<String> expectedUsers,
+                                                Map<PolicyKey, AccessPolicy> accessPolicyMapByPK) {
+        assertDefaultAdminPolicyExists(resource, RequestAction.READ, expectedUsers, accessPolicyMapByPK);
+        assertDefaultAdminPolicyExists(resource, RequestAction.WRITE, expectedUsers, accessPolicyMapByPK);
+        assertDefaultAdminPolicyExists(resource, RequestAction.DELETE, expectedUsers, accessPolicyMapByPK);
+    }
+
     private void assertDefaultAdminPolicyExists(String resource, RequestAction action,
                                                 Set<String> expectedUsers,
                                                 Map<PolicyKey, AccessPolicy> accessPolicyMapByPK) {
@@ -371,12 +375,12 @@ public class CachedDatabaseAccessPolicyProviderTest {
         configureProvider("admin", null);
         Map<String, Integer> policiesCountByResource = getPolicyCountByResourceForUser("admin");
         Assertions.assertEquals(6, policiesCountByResource.size());
-        Assertions.assertEquals(3, policiesCountByResource.get("/tenants"));
-        Assertions.assertEquals(3, policiesCountByResource.get("/proxy"));
-        Assertions.assertEquals(3, policiesCountByResource.get("/policies"));
-        Assertions.assertEquals(3, policiesCountByResource.get("/buckets"));
-        Assertions.assertEquals(3, policiesCountByResource.get("/actuator"));
-        Assertions.assertEquals(3, policiesCountByResource.get("/swagger"));
+        Assertions.assertEquals(3, policiesCountByResource.get(InitialPolicies.TENANTS_RESOURCE));
+        Assertions.assertEquals(3, policiesCountByResource.get(InitialPolicies.PROXY_RESOURCE));
+        Assertions.assertEquals(3, policiesCountByResource.get(InitialPolicies.POLICIES_RESOURCE));
+        Assertions.assertEquals(3, policiesCountByResource.get(InitialPolicies.BUCKETS_RESOURCE));
+        Assertions.assertEquals(3, policiesCountByResource.get(InitialPolicies.ACTUATOR_RESOURCE));
+        Assertions.assertEquals(3, policiesCountByResource.get(InitialPolicies.SWAGGER_RESOURCE));
     }
 
     @Test
@@ -525,6 +529,54 @@ public class CachedDatabaseAccessPolicyProviderTest {
         AccessPolicy apGet = provider.getAccessPolicy(apReturned.getIdentifier());
         Assertions.assertEquals(ap.getIdentifier(), apGet.getIdentifier());
         checkAccessPolicyInDB(ap, Set.of(user1.getIdentifier(), user2.getIdentifier()), Collections.emptySet());
+    }
+
+    @Test
+    public void addNewPolicyTwice() {
+        configureUserGroupProvider("admin", "user1", "user2");
+        User user1 = userGroupProvider.getUserByIdentity("user1");
+        User user2 = userGroupProvider.getUserByIdentity("user2");
+        configureProvider("admin", null);
+        AccessPolicy ap = new AccessPolicy.Builder().
+                identifierGenerateRandom().
+                resource("/test-resource1").
+                action(RequestAction.READ).
+                addUser(user1.getIdentifier()).
+                addUser(user2.getIdentifier()).
+                build();
+        //create ap:
+        AccessPolicy apReturned = provider.addAccessPolicy(ap);
+        Assertions.assertEquals(ap.getIdentifier(), apReturned.getIdentifier());
+        //DuplicateKeyException on 2nd creation of ap:
+        Assertions.assertThrows(DuplicateKeyException.class, () -> provider.addAccessPolicy(ap));
+    }
+
+    @Test
+    public void addDuplicatePolicy() {
+        configureUserGroupProvider("admin", "user1", "user2");
+        User user1 = userGroupProvider.getUserByIdentity("user1");
+        User user2 = userGroupProvider.getUserByIdentity("user2");
+        configureProvider("admin", null);
+        AccessPolicy ap = new AccessPolicy.Builder().
+                identifierGenerateRandom().
+                resource("/test-resource1").
+                action(RequestAction.READ).
+                addUser(user1.getIdentifier()).
+                addUser(user2.getIdentifier()).
+                build();
+        //create ap:
+        AccessPolicy apReturned = provider.addAccessPolicy(ap);
+        Assertions.assertEquals(ap.getIdentifier(), apReturned.getIdentifier());
+        //create duplicate policy with identical resource and action, but different identifier:
+        AccessPolicy duplicatePolicy = new AccessPolicy.Builder().
+                identifierGenerateRandom().
+                resource("/test-resource1").
+                action(RequestAction.READ).
+                addUser(user1.getIdentifier()).
+                addUser(user2.getIdentifier()).
+                build();
+        //DuplicateKeyException on duplicate creation:
+        Assertions.assertThrows(DuplicateKeyException.class, () -> provider.addAccessPolicy(duplicatePolicy));
     }
 
     @Test
@@ -738,16 +790,7 @@ public class CachedDatabaseAccessPolicyProviderTest {
     @Test
     public void getNotExistingAccessPolicyByResource() {
         configureUserGroupProvider("admin", "user1", "user2");
-        User user1 = userGroupProvider.getUserByIdentity("user1");
-        User user2 = userGroupProvider.getUserByIdentity("user2");
         configureProvider("admin", null);
-        AccessPolicy ap = new AccessPolicy.Builder().
-                identifierGenerateRandom().
-                resource("/test-resource3").
-                action(RequestAction.WRITE).
-                addUser(user1.getIdentifier()).
-                addUser(user2.getIdentifier()).
-                build();
         //get ap by resource:
         AccessPolicy apReturned = provider.getAccessPolicy("/test-resource3", RequestAction.WRITE);
         Assertions.assertNull(apReturned);
@@ -794,42 +837,12 @@ public class CachedDatabaseAccessPolicyProviderTest {
         Assertions.assertTrue(accessPolicyMapById.containsKey(newApFromDB4.getIdentifier()));
         assertAccessPoliciesEqual(newApFromDB4, accessPolicyMapById.get(newApFromDB4.getIdentifier()));
         //default policies:
-        assertDefaultAdminPolicyExists("/tenants", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/tenants", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/tenants", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/policies", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/policies", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/policies", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/buckets", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/buckets", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/buckets", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/proxy", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/proxy", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/proxy", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/actuator", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/actuator", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/actuator", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/swagger", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/swagger", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/swagger", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.TENANTS_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.POLICIES_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.BUCKETS_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.PROXY_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.ACTUATOR_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.SWAGGER_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
     }
 
     @Test
@@ -873,42 +886,12 @@ public class CachedDatabaseAccessPolicyProviderTest {
         Assertions.assertTrue(accessPolicyMapById.containsKey(newApFromDB4.getIdentifier()));
         assertAccessPoliciesEqual(newApFromDB4, accessPolicyMapById.get(newApFromDB4.getIdentifier()));
         //default policies:
-        assertDefaultAdminPolicyExists("/tenants", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/tenants", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/tenants", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/policies", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/policies", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/policies", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/buckets", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/buckets", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/buckets", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/proxy", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/proxy", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/proxy", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/actuator", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/actuator", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/actuator", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/swagger", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/swagger", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/swagger", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.TENANTS_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.POLICIES_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.BUCKETS_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.PROXY_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.ACTUATOR_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.SWAGGER_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
         //add new policy in DB:
         AccessPolicy newApFromDB5  = createAccessPolicyInDB("/test-resource123456", RequestAction.READ,
                 Collections.emptySet(), Collections.emptySet());
@@ -930,12 +913,7 @@ public class CachedDatabaseAccessPolicyProviderTest {
         Assertions.assertTrue(accessPolicyMapById.containsKey(newApFromDB4.getIdentifier()));
         assertAccessPoliciesEqual(newApFromDB4, accessPolicyMapById.get(newApFromDB4.getIdentifier()));
         //default policies:
-        assertDefaultAdminPolicyExists("/tenants", RequestAction.READ,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/tenants", RequestAction.WRITE,
-                expectedAdminUserIds, accessPolicyMapByPK);
-        assertDefaultAdminPolicyExists("/tenants", RequestAction.DELETE,
-                expectedAdminUserIds, accessPolicyMapByPK);
+        assertDefaultAdminPoliciesExist(InitialPolicies.TENANTS_RESOURCE, expectedAdminUserIds, accessPolicyMapByPK);
         //new policy:
         Assertions.assertFalse(accessPolicyMapById.containsKey(newApFromDB5.getIdentifier()));
         PolicyKey pk = new PolicyKey(newApFromDB5.getResource(), newApFromDB5.getAction());

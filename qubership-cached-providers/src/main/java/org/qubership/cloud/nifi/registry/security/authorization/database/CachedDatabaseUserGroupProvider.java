@@ -111,7 +111,7 @@ public class CachedDatabaseUserGroupProvider
         try {
             dbLock.writeLock().lock();
             cacheLock.writeLock().lock();
-            final int rowsUpdated = jdbcTemplate.update(sql,
+            jdbcTemplate.update(sql,
                     user.getIdentifier(),
                     user.getIdentity());
             userCacheById.put(user.getIdentifier(), user);
@@ -136,10 +136,16 @@ public class CachedDatabaseUserGroupProvider
 
         final String sql = "update ugp_user set identity = ? where identifier = ?";
         User existingUser = getUser(user.getIdentifier());
+
+        //if user does not exist, return null:
+        if (existingUser == null) {
+            return null;
+        }
+
         try {
             dbLock.writeLock().lock();
             cacheLock.writeLock().lock();
-            final int rowsUpdated = jdbcTemplate.update(sql,
+            jdbcTemplate.update(sql,
                     user.getIdentity(),
                     user.getIdentifier());
             userCacheById.put(user.getIdentifier(), user);
@@ -164,16 +170,22 @@ public class CachedDatabaseUserGroupProvider
         Objects.requireNonNull(user);
 
         final String sql = "delete from ugp_user where identifier = ?";
+        int rowsUpdated;
         try {
             dbLock.writeLock().lock();
             cacheLock.writeLock().lock();
-            final int rowsUpdated = jdbcTemplate.update(sql,
+            rowsUpdated = jdbcTemplate.update(sql,
                     user.getIdentifier());
             userCacheById.remove(user.getIdentifier());
             userCacheByIdentity.remove(user.getIdentity());
         } finally {
             cacheLock.writeLock().unlock();
             dbLock.writeLock().unlock();
+        }
+
+        //user does not exist:
+        if (rowsUpdated <= 0) {
+            return null;
         }
 
         return user;
@@ -202,7 +214,7 @@ public class CachedDatabaseUserGroupProvider
         try {
             dbLock.writeLock().lock();
             cacheLock.writeLock().lock();
-            final int rowsUpdated = jdbcTemplate.update(sql,
+            jdbcTemplate.update(sql,
                     group.getIdentifier(),
                     group.getName(),
                     users);
@@ -254,7 +266,7 @@ public class CachedDatabaseUserGroupProvider
             if (group.getUsers() != null) {
                 users = group.getUsers().toArray(new String[0]);
             }
-            int rowsUpdated = jdbcTemplate.update(usersUpdate,
+            jdbcTemplate.update(usersUpdate,
                     group.getName(),
                     group.getIdentifier(),
                     group.getIdentifier(),
@@ -663,6 +675,7 @@ public class CachedDatabaseUserGroupProvider
 
     @Override
     public void preDestruction() throws SecurityProviderDestructionException {
-
+        //this access policy provider does not need to clean anything before destruction
+        //so this method must be empty
     }
 }

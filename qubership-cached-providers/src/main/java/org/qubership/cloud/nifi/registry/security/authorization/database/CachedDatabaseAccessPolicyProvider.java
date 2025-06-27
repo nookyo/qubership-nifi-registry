@@ -108,7 +108,7 @@ public class CachedDatabaseAccessPolicyProvider
             throws SecurityProviderCreationException {
         try {
             LOGGER.debug("Configuring {}", this.getClass().getCanonicalName());
-            PropertyValue userGroupProviderIdentifier = configurationContext.getProperty("User Group Provider");
+            PropertyValue userGroupProviderIdentifier = configurationContext.getProperty(PROP_USER_GROUP_PROVIDER);
             if (!userGroupProviderIdentifier.isSet()) {
                 throw new SecurityProviderCreationException("The user group provider must be specified.");
             } else {
@@ -317,7 +317,7 @@ public class CachedDatabaseAccessPolicyProvider
         try {
             dbLock.writeLock().lock();
             cacheLock.writeLock().lock();
-            final int rowsUpdated = jdbcTemplate.update(sql,
+            jdbcTemplate.update(sql,
                     accessPolicy.getIdentifier(),
                     accessPolicy.getResource(),
                     accessPolicy.getAction().toString(),
@@ -366,7 +366,7 @@ public class CachedDatabaseAccessPolicyProvider
             if (accessPolicy.getGroups() != null) {
                 groups = accessPolicy.getGroups().toArray(new String[0]);
             }
-            int rowsUpdated = jdbcTemplate.update(groupsUpdate,
+            jdbcTemplate.update(groupsUpdate,
                     accessPolicy.getIdentifier(),
                     groups,
                     accessPolicy.getIdentifier(),
@@ -387,7 +387,7 @@ public class CachedDatabaseAccessPolicyProvider
             if (accessPolicy.getUsers() != null) {
                 users = accessPolicy.getUsers().toArray(new String[0]);
             }
-            rowsUpdated = jdbcTemplate.update(usersUpdate,
+            jdbcTemplate.update(usersUpdate,
                     accessPolicy.getIdentifier(),
                     users,
                     accessPolicy.getIdentifier(),
@@ -607,6 +607,7 @@ public class CachedDatabaseAccessPolicyProvider
      */
     @Override
     public void preDestruction() throws SecurityProviderDestructionException {
-
+        //this access policy provider does not need to clean anything before destruction
+        //so this method must be empty
     }
 }

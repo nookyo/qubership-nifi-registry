@@ -11,10 +11,10 @@ import org.apache.nifi.registry.security.authorization.UserGroupProviderInitiali
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DuplicateKeyException;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -64,10 +64,6 @@ public class CachedDatabaseUserGroupProviderTest {
         hikariConfig.setMaximumPoolSize(10);
         hikariConfig.setLeakDetectionThreshold(4000);
         dataSource = new HikariDataSource(hikariConfig);
-    }
-
-    @BeforeAll
-    public static void setUpForAll() {
     }
 
     @AfterAll
@@ -204,6 +200,35 @@ public class CachedDatabaseUserGroupProviderTest {
                 "admin", "user1", "user2", "user5", "user6")));
     }
 
+    @Test
+    public void addUserTwice() {
+        configureProvider("admin", "user1", "user2");
+        User newUser123 = new User.Builder().
+                identifierGenerateFromSeed("user123").
+                identity("user123").
+                build();
+        User creationResult = provider.addUser(newUser123);
+        Assertions.assertNotNull(creationResult);
+        //DuplicateKeyException on 2nd creation of the same user:
+        Assertions.assertThrows(DuplicateKeyException.class, () -> provider.addUser(newUser123));
+    }
+
+    @Test
+    public void addUserWithDuplicateIdentity() {
+        configureProvider("admin", "user1", "user2");
+        User newUser123 = new User.Builder().
+                identifierGenerateFromSeed("user123").
+                identity("user123").
+                build();
+        User creationResult = provider.addUser(newUser123);
+        Assertions.assertNotNull(creationResult);
+        User newUser12345 = new User.Builder().
+                identifierGenerateFromSeed("user12345").
+                identity("user123").
+                build();
+        //DuplicateKeyException on 2nd creation of the same user:
+        Assertions.assertThrows(DuplicateKeyException.class, () -> provider.addUser(newUser12345));
+    }
 
     @Test
     public void getUserByIdentity() {
@@ -330,6 +355,38 @@ public class CachedDatabaseUserGroupProviderTest {
         Assertions.assertEquals(group.getIdentifier(), groupByGet.getIdentifier());
         Assertions.assertNotNull(groupByGet.getUsers());
         Assertions.assertEquals(0, groupByGet.getUsers().size());
+    }
+
+    @Test
+    public void addGroupTwice() {
+        configureProvider("admin", "user1", "user2");
+        Group group = new Group.Builder().
+                identifierGenerateFromSeed("group1").
+                name("group1").
+                build();
+        Group createdGroup = provider.addGroup(group);
+        Assertions.assertEquals("group1", createdGroup.getName());
+        Assertions.assertEquals(group.getIdentifier(), createdGroup.getIdentifier());
+        //DuplicateKeyException on 2nd creation of group:
+        Assertions.assertThrows(DuplicateKeyException.class, () -> provider.addGroup(group));
+    }
+
+    @Test
+    public void addGroupWithDuplicateName() {
+        configureProvider("admin", "user1", "user2");
+        Group group = new Group.Builder().
+                identifierGenerateFromSeed("group1").
+                name("group1").
+                build();
+        Group createdGroup = provider.addGroup(group);
+        Assertions.assertEquals("group1", createdGroup.getName());
+        Assertions.assertEquals(group.getIdentifier(), createdGroup.getIdentifier());
+        Group duplicateGroup = new Group.Builder().
+                identifierGenerateFromSeed("group12345").
+                name("group1").
+                build();
+        //DuplicateKeyException on creation of duplicate group:
+        Assertions.assertThrows(DuplicateKeyException.class, () -> provider.addGroup(duplicateGroup));
     }
 
     @Test

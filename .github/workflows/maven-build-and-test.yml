@@ -8,6 +8,7 @@ on:
       - 'nifi-registry-db-util/**'
       - 'nifi-registry-migration-util/**'
       - 'nifi-registry-util/**'
+      - 'qubership-cached-providers/**'
       - 'pom.xml'
   pull_request:
     paths:
@@ -15,6 +16,7 @@ on:
       - 'nifi-registry-db-util/**'
       - 'nifi-registry-migration-util/**'
       - 'nifi-registry-util/**'
+      - 'qubership-cached-providers/**'
       - 'pom.xml'
   workflow_dispatch:
     inputs:

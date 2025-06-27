@@ -53,14 +53,15 @@ Qubership-nifi-registry docker image has several volumes that are used for stori
 and several directories that used for storing or injecting data.
 The table below provides a list of volumes and directories and their description.
 
-| Name                  | Type      | Path                                                     | Description                                                                                                             |
-|-----------------------|-----------|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
-| Service configuration | Volume    | /opt/nifi-registry/nifi-registry-current/conf            | Contains configuration files for qubership-nifi-registry startup.                                                       |
-| Logs                  | Volume    | /opt/nifi-registry/nifi-registry-current/logs            | Contains log files.                                                                                                     |
-| Run                   | Volume    | /opt/nifi-registry/nifi-registry-current/run             | Contains current nifi registry pid and status file.                                                                     |
-| Work                  | Volume    | /opt/nifi-registry/nifi-registry-current/work            | Contains some data used by nifi registry in runtime.                                                                    |
-| TLS certificates      | Directory | /tmp/tls-certs                                           | Contains TLS keystore (keystore.p12) and truststore (truststore.p12). Required for startup with AUTH = oidc, tls, ldap. |
-| Configuration data    | Directory | /opt/nifi-registry/nifi-registry-current/persistent_data | Contains metadata database and flow storage, if NIFI_REG_USE_PGDB != `true`.                                            |
+| Name                       | Type      | Path                                                     | Description                                                                                                                                                              |
+|----------------------------|-----------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Service configuration      | Volume    | /opt/nifi-registry/nifi-registry-current/conf            | Contains configuration files for qubership-nifi-registry startup.                                                                                                        |
+| Logs                       | Volume    | /opt/nifi-registry/nifi-registry-current/logs            | Contains log files.                                                                                                                                                      |
+| Run                        | Volume    | /opt/nifi-registry/nifi-registry-current/run             | Contains current nifi registry pid and status file.                                                                                                                      |
+| Work                       | Volume    | /opt/nifi-registry/nifi-registry-current/work            | Contains some data used by nifi registry in runtime.                                                                                                                     |
+| TLS certificates           | Directory | /tmp/tls-certs                                           | Contains TLS keystore (keystore.p12) and truststore (truststore.p12). Required for startup with AUTH = oidc, tls, ldap.                                                  |
+| Configuration data         | Directory | /opt/nifi-registry/nifi-registry-current/persistent_data | Contains metadata database and flow storage, if NIFI_REG_USE_PGDB != `true`.                                                                                             |
+| Cached providers extension | Directory | /opt/nifi-registry/nifi-registry-current/ext-cached      | Extension for cached access policy and user group providers. See also environment property `NIFI_REG_DB_FLOW_AUTHORIZERS` and section below dedicated to this extension. |
 
 ## Migration from file storage
 
@@ -73,3 +74,19 @@ To migrate data from file-based storage to PostgreSQL DB one needs to:
 
 Once qubership-nifi-registry successfully starts, NIFI_REG_MIGRATE_TO_DB may be removed or set to `false`.
 After that data that was stored on disk can be removed.
+
+## Cached providers extension
+
+This extension contains libraries for PostgreSQL DB-based access policy (CachedDatabaseAccessPolicyProvider) and user group (CachedDatabaseUserGroupProvider) providers with in-memory caches.
+
+Functionality of these providers is identical to standard DatabaseAccessPolicyProvider and DatabaseUserGroupProvider.
+Configuration parameters are the same as for standard DatabaseAccessPolicyProvider and DatabaseUserGroupProvider.
+The differences are:
+1. only PostgreSQL Database is supported
+2. cached providers load in-memory cache for all entities, if bulk method (e.g. getPolicies or getUsers) is called, or only accessed entities (if single gets are used).
+3. cache is hold until the next restart. The assumption is that all changes to DB are done via provider, so it can properly update the cache.
+4. cached providers rely on PostgreSQL-specific SQL syntax to reduce number of SQL calls, compared with more generic approach in original Apache NiFi Registry providers.
+
+Due to these differences cached providers may have higher performance, especially if lots of users are created in Apache NiFi Registry.
+
+Environment variable `NIFI_REG_DB_FLOW_AUTHORIZERS` can be used to enable/disable usage of cached providers.
