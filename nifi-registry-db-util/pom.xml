@@ -21,21 +21,21 @@
     <parent>
         <artifactId>qubership-nifi-registry</artifactId>
         <groupId>org.qubership.nifi</groupId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>nifi-registry-db-util</artifactId>
-    
+
     <dependencies>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
             <version>${postgresql.jdbc.version}</version>
-		</dependency>
-	</dependencies>
-    
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
