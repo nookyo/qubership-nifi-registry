@@ -40,7 +40,7 @@ services:
       - TRUSTSTORE_PATH=/tmp/tls-certs/truststore.p12
       - TRUSTSTORE_TYPE=PKCS12
       - TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
-      - INITIAL_ADMIN_IDENTITY=CN=admin, OU=NIFI
+      - INITIAL_ADMIN_IDENTITY=admin
       - NIFI_REG_USE_PGDB=true
       - NIFI_REG_DB_URL=jdbc:postgresql://postgresql:5432/postgres
       - NIFI_REG_DB_USERNAME=postgres

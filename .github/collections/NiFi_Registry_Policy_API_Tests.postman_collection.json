@@ -21,7 +21,7 @@
                                     "pm.test(\"Response is JSON and contains 1 user\", function () {\r",
                                     "    var jsonData = pm.response.json();\r",
                                     "    pm.expect(jsonData.length).to.eql(1);\r",
-                                    "    pm.expect(jsonData[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+                                    "    pm.expect(jsonData[0].identity).to.eql(\"admin\");\r",
                                     "    pm.environment.set(\"registry.default.admin.id\", jsonData[0].identifier);\r",
                                     "});"
                                 ],
@@ -313,7 +313,7 @@
                                     "});\r",
                                     "pm.test(\"Response is JSON and contains user data\", function () {\r",
                                     "    var jsonData = pm.response.json();\r",
-                                    "    pm.expect(jsonData.identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+                                    "    pm.expect(jsonData.identity).to.eql(\"admin\");\r",
                                     "});"
                                 ],
                                 "type": "text/javascript"
@@ -944,7 +944,7 @@
                                     "pm.test(\"Response is JSON and contains 1 user\", function () {\r",
                                     "    var jsonData = pm.response.json();\r",
                                     "    pm.expect(jsonData.users.length).to.eql(1);\r",
-                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"admin\");\r",
                                     "    pm.environment.set(\"registry.read.proxy.id\", jsonData.identifier);\r",
                                     "    pm.environment.set(\"registry.read.proxy.version\", jsonData.revision.version);\r",
                                     "});"
@@ -984,7 +984,7 @@
                                     "pm.test(\"Response is JSON and contains 1 user\", function () {\r",
                                     "    var jsonData = pm.response.json();\r",
                                     "    pm.expect(jsonData.users.length).to.eql(1);\r",
-                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"admin\");\r",
                                     "    pm.environment.set(\"registry.write.proxy.id\", jsonData.identifier);\r",
                                     "    pm.environment.set(\"registry.write.proxy.version\", jsonData.revision.version);\r",
                                     "});"
@@ -1114,7 +1114,7 @@
                                     "pm.test(\"Response is JSON and contains 1 user\", function () {\r",
                                     "    var jsonData = pm.response.json();\r",
                                     "    pm.expect(jsonData.users.length).to.eql(1);\r",
-                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"admin\");\r",
                                     "    pm.environment.set(\"registry.read.buckets.id\", jsonData.identifier);\r",
                                     "    pm.environment.set(\"registry.read.buckets.version\", jsonData.revision.version);\r",
                                     "});"
@@ -1154,7 +1154,7 @@
                                     "pm.test(\"Response is JSON and contains 1 user\", function () {\r",
                                     "    var jsonData = pm.response.json();\r",
                                     "    pm.expect(jsonData.users.length).to.eql(1);\r",
-                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"admin\");\r",
                                     "    pm.environment.set(\"registry.write.buckets.id\", jsonData.identifier);\r",
                                     "    pm.environment.set(\"registry.write.buckets.version\", jsonData.revision.version);\r",
                                     "});"
@@ -1194,7 +1194,7 @@
                                     "pm.test(\"Response is JSON and contains 1 user\", function () {\r",
                                     "    var jsonData = pm.response.json();\r",
                                     "    pm.expect(jsonData.users.length).to.eql(1);\r",
-                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"admin\");\r",
                                     "    pm.environment.set(\"registry.delete.buckets.id\", jsonData.identifier);\r",
                                     "    pm.environment.set(\"registry.delete.buckets.version\", jsonData.revision.version);\r",
                                     "});"
@@ -1370,7 +1370,7 @@
                                     "    var jsonData = pm.response.json();\r",
                                     "    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
                                     "    pm.expect(jsonData.users.length).to.eql(1);\r",
-                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"admin\");\r",
                                     "});"
                                 ],
                                 "type": "text/javascript"
@@ -1453,7 +1453,7 @@
                                     "    var jsonData = pm.response.json();\r",
                                     "    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
                                     "    pm.expect(jsonData.users.length).to.eql(1);\r",
-                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"admin\");\r",
                                     "    pm.environment.set(\"registry.delete.newbucket.id\", jsonData.identifier);\r",
                                     "    pm.environment.set(\"registry.delete.newbucket.version\", jsonData.revision.version);\r",
                                     "});"
@@ -1501,7 +1501,7 @@
                                     "    var jsonData = pm.response.json();\r",
                                     "    pm.expect(jsonData.userGroups.length).to.eql(1);\r",
                                     "    pm.expect(jsonData.users.length).to.eql(1);\r",
-                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"CN=admin, OU=NIFI\");\r",
+                                    "    pm.expect(jsonData.users[0].identity).to.eql(\"admin\");\r",
                                     "});"
                                 ],
                                 "type": "text/javascript"

@@ -33,7 +33,7 @@ services:
       - TRUSTSTORE_PATH=/tmp/tls-certs/truststore.p12
       - TRUSTSTORE_TYPE=PKCS12
       - TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
-      - INITIAL_ADMIN_IDENTITY=CN=admin, OU=NIFI
+      - INITIAL_ADMIN_IDENTITY=admin
     container_name: local-nifi-registry-tls
     hostname: nifi-registry
   consul:

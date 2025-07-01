@@ -34,15 +34,15 @@ prop_replace 'nifi.registry.web.http.port'      "${NIFI_REGISTRY_WEB_HTTP_PORT:-
 prop_replace 'nifi.registry.web.http.host'      "${NIFI_REGISTRY_WEB_HTTP_HOST:-$HOSTNAME}"
 
 
-if [ -n "${NIFI_REG_JVM_HEAP_INIT}" ] && [ "${NIFI_REG_JVM_HEAP_INIT}" != "${ENV_NIFI_REG_JVM_HEAP_INIT}" ]; then
+if [ -n "${NIFI_REG_JVM_HEAP_INIT}" ] && [ "${NIFI_REG_JVM_HEAP_INIT}" != "\${ENV_NIFI_REG_JVM_HEAP_INIT}" ]; then
     prop_replace 'java.arg.2'       "-Xms${NIFI_REG_JVM_HEAP_INIT}" "${NIFI_REGISTRY_HOME}"/conf/bootstrap.conf
 fi
 
-if [ -n "${NIFI_REG_JVM_HEAP_MAX}" ] && [ "${NIFI_REG_JVM_HEAP_MAX}" != "${ENV_NIFI_REG_JVM_HEAP_MAX}" ]; then
+if [ -n "${NIFI_REG_JVM_HEAP_MAX}" ] && [ "${NIFI_REG_JVM_HEAP_MAX}" != "\${ENV_NIFI_REG_JVM_HEAP_MAX}" ]; then
     prop_replace 'java.arg.3'       "-Xmx${NIFI_REG_JVM_HEAP_MAX}" "${NIFI_REGISTRY_HOME}"/conf/bootstrap.conf
 fi
 
-if [ -n "${NIFI_REG_XSS}" ] && [ "${NIFI_REG_XSS}" != "${ENV_NIFI_REG_XSS}" ]; then
+if [ -n "${NIFI_REG_XSS}" ] && [ "${NIFI_REG_XSS}" != "\${ENV_NIFI_REG_XSS}" ]; then
     {
         echo ""
         echo ""
@@ -61,7 +61,7 @@ if [ -n "${NIFI_DEBUG_NATIVE_MEMORY}" ]; then
 fi
 echo "" >> "${NIFI_REGISTRY_HOME}"/conf/bootstrap.conf
 
-if [ -n "${NIFI_REG_ADDITIONAL_JVM_ARGS}" ] && [ "${NIFI_REG_ADDITIONAL_JVM_ARGS}" != "${ENV_NIFI_REG_ADDITIONAL_JVM_ARGS}" ]; then
+if [ -n "${NIFI_REG_ADDITIONAL_JVM_ARGS}" ] && [ "${NIFI_REG_ADDITIONAL_JVM_ARGS}" != "\${ENV_NIFI_REG_ADDITIONAL_JVM_ARGS}" ]; then
     i=9
     read -r -a addJvmArgArr <<< "$NIFI_REG_ADDITIONAL_JVM_ARGS"
     for addJvmArg in "${addJvmArgArr[@]}"; do

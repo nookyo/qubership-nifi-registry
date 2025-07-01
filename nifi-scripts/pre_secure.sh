@@ -25,13 +25,13 @@ scripts_dir='/opt/nifi-registry/scripts'
 sed -i -r -e "s|^\#\s*(nifi\.registry\.security\.identity\.mapping\.pattern\.dn=)|\1|" "${NIFI_REGISTRY_HOME}"/conf/nifi-registry.properties
 sed -i -r -e "s|^\#\s*(nifi\.registry\.security\.identity\.mapping\.value\.dn=)|\1|" "${NIFI_REGISTRY_HOME}"/conf/nifi-registry.properties
 prop_replace 'nifi.registry.security.identity.mapping.pattern.dn' '\^\.\*EMAILADDRESS=\(\[\^,\]\*\)\.\*\$'
-prop_replace 'nifi.registry.security.identity.mapping.value.dn' "\$1"
+prop_replace 'nifi.registry.security.identity.mapping.value.dn' "\\\$1"
 
 {
     echo ""
     echo ""
-    echo "nifi.registry.security.identity.mapping.pattern.dn2=^CN=(.*?), .*$"
-    echo "nifi.registry.security.identity.mapping.value.dn2=$1"
+    echo "nifi.registry.security.identity.mapping.pattern.dn2=^CN=(.*?), .*\$"
+    echo "nifi.registry.security.identity.mapping.value.dn2=\$1"
 } >>"${NIFI_REGISTRY_HOME}"/conf/nifi-registry.properties
 
 
