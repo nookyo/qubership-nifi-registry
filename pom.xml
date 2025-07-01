@@ -21,7 +21,7 @@
     <groupId>org.qubership.nifi</groupId>
     <artifactId>qubership-nifi-registry</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <modules>
         <module>nifi-registry-util</module>
         <module>nifi-registry-migration-util</module>
