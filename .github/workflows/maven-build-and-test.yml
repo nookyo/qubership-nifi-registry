@@ -58,6 +58,8 @@ on:
         default: false
         required: false
         type: boolean
+permissions:
+  contents: read
 jobs:
   maven-build-and-test:
     runs-on: ubuntu-latest

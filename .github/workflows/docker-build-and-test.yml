@@ -41,6 +41,8 @@ on:
         type: string
         default: "21"
         description: 'Java version (e.g., 21)'
+permissions:
+  contents: read
 jobs:
   mvn:
     uses: ./.github/workflows/maven-build-and-test.yml
