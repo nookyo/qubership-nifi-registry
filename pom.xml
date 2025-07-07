@@ -21,7 +21,7 @@
     <groupId>org.qubership.nifi</groupId>
     <artifactId>qubership-nifi-registry</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
     <modules>
         <module>nifi-registry-util</module>
         <module>nifi-registry-migration-util</module>
@@ -33,7 +33,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version>
+        <version>3.4.7</version>
         <relativePath />
     </parent>
 
@@ -45,7 +45,7 @@
         <jacoco.version>0.8.8</jacoco.version>
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
         <postgresql.jdbc.version>42.7.2</postgresql.jdbc.version>
-        <commons-io.version>2.11.0</commons-io.version>
+        <commons-io.version>2.14.0</commons-io.version>
         <testcontainers.version>1.20.4</testcontainers.version>
         <junit.jupiter.version>5.11.1</junit.jupiter.version>
         <lombok.version>1.18.30</lombok.version>
