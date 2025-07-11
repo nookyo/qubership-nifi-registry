@@ -76,6 +76,17 @@ generate_random_hex_password() {
     echo "$(tr -dc A-F </dev/urandom | head -c "$1")""$(tr -dc 0-9 </dev/urandom | head -c "$2")" | fold -w 1 | shuf | tr -d '\n'
 }
 
+generate_random_password() {
+    #args -- letters, numbers, special characters
+    echo "$(tr -dc '[:lower:]''[:upper:]' </dev/urandom | head -c "$1")""$(tr -dc 0-9 </dev/urandom | head -c "$2")""\
+$(tr -dc '!@#%^&*()-+{}=`~,<>./?' </dev/urandom | head -c "$3")" | fold -w 1 | shuf | tr -d '\n'
+}
+
+get_next_summary_file_name() {
+    current_steps_count=$(find "./test-results/$1" -name "summary_*.txt" | wc -l)
+    echo "summary_step$(printf %03d $((current_steps_count + 1))).txt"
+}
+
 configure_log_level() {
     local targetPkg="$1"
     local targetLevel="$2"
@@ -186,6 +197,7 @@ wait_nifi_reg_container() {
     wait_success="1"
     wait_for_service "$hostName" "$portNum" "$apiUrl" "$waitTimeout" "$useTls" \
         "$caCert" "$clientKeystore" "$clientPassword" || wait_success="0"
+    summaryFileName=$(get_next_summary_file_name "$resultsDir")
     if [ "$wait_success" == '0' ]; then
         echo "List of containers:"
         docker ps -a
@@ -195,14 +207,18 @@ wait_nifi_reg_container() {
         cat ./nifi_registry_log_tmp.lst
         echo "Wait failed, nifi registry not available" >"./test-results/$resultsDir/failed_nifi_registry_wait.lst"
         mv ./nifi_registry_log_tmp.lst "./test-results/$resultsDir/nifi_registry_log_after_wait.log"
+        echo "| Wait for container start                       | Failed :x:                 |" >"./test-results/$resultsDir/$summaryFileName"
+        return 1
     fi
+    echo "| Wait for container start                       | Success :white_check_mark: |" >"./test-results/$resultsDir/$summaryFileName"
+    return 0
 }
 
 generate_tls_passwords() {
     echo "Generating passwords..."
-    TRUSTSTORE_PASSWORD=$(generate_random_hex_password 8 4)
-    KEYSTORE_PASSWORD_NIFI=$(generate_random_hex_password 8 4)
-    KEYSTORE_PASSWORD_NIFI_REG=$(generate_random_hex_password 8 4)
+    TRUSTSTORE_PASSWORD=$(generate_random_password 8 4 3)
+    KEYSTORE_PASSWORD_NIFI=$(generate_random_password 8 4 3)
+    KEYSTORE_PASSWORD_NIFI_REG=$(generate_random_password 8 4 3)
     KEYCLOAK_TLS_PASS=$(generate_random_hex_password 8 4)
     export TRUSTSTORE_PASSWORD
     export KEYSTORE_PASSWORD_NIFI
@@ -239,4 +255,27 @@ generate_add_certs() {
         -file ./temp-vol/tls-cert/ca/keycloak-ca.cer
     keytool -importcert -keystore ./temp-vol/tls-cert/keycloak-server.p12 -storetype PKCS12 -storepass "$KEYCLOAK_TLS_PASS" \
         -file ./temp-vol/tls-cert/ca/keycloak-ca.cer -alias keycloak-ca-cer -noprompt
+}
+
+setup_env_before_tests() {
+    local runMode="$1"
+    prepare_results_dir "$runMode"
+    generate_tls_passwords
+    create_docker_env_file
+    if [[ "$runMode" == "plain" ]] || [[ "$runMode" == "tls" ]]; then
+        mkdir -p ./temp-vol/nifi-reg/database/
+        mkdir -p ./temp-vol/nifi-reg/flow-storage/
+    else
+        mkdir -p ./temp-vol/pg-db/
+    fi
+    mkdir -p ./temp-vol/tls-cert/
+    mkdir -p ./temp-vol/tls-cert/nifi-registry/
+    if [[ "$runMode" == "oidc" ]]; then
+        mkdir -p ./temp-vol/tls-cert/ca/
+    fi
+    chmod -R 777 ./temp-vol
+    #generate keycloak certificates:
+    if [[ "$runMode" == "oidc" ]]; then
+        generate_add_certs
+    fi
 }

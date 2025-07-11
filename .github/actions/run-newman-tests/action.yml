@@ -20,21 +20,25 @@ inputs:
     default: 'plain'
   tls-certs-dir:
     description: |
-      Path to local directory with TLS certificates in PEM format. 
+      Path to local directory with TLS certificates in PEM format.
       Corresponds to newman option ssl-extra-ca-certs.
     required: false
     default: './temp-vol/tls-cert'
   tls-ca-certs:
     description: |
-      Relative path (within directory specified in tls-certs-dir) to file with additional TLS CA certificates in PEM format. 
+      Relative path (within directory specified in tls-certs-dir) to file with additional TLS CA certificates in PEM format.
       Corresponds to newman option ssl-extra-ca-certs.
     required: false
     default: ''
   tls-client-certs-config:
     description: |
-      Relative path (within directory specified in tls-certs-dir) to JSON file with TLS client certificates configuration. 
+      Relative path (within directory specified in tls-certs-dir) to JSON file with TLS client certificates configuration.
       Corresponds to newman option ssl-client-cert-list.
     required: false
+    default: ''
+  docker-compose-file:
+    description: 'Path to docker compose file'
+    required: true
     default: ''
 runs:
   using: "composite"
@@ -48,6 +52,7 @@ runs:
       shell: bash
       continue-on-error: true
       run: |
+        . .github/workflows/sh/nifi-lib.sh
         gitDir="$(pwd)"
         collectionsDir="${gitDir}/.github/collections"
         echo "Running newman using collection ${{ inputs.collection-name }} with env ${{ inputs.env-name }} from $collectionsDir"
@@ -72,12 +77,25 @@ runs:
           echo "TLS certificate directory found at $tlsCertsDir, adding volume mapped to /tmp/tls-certs"
           additionalVolumes="-v \"$tlsCertsDir:/tmp/tls-certs\""
         fi
+        composeFile="${{ inputs.docker-compose-file }}"
         eval docker run --net=host --rm -v "$collectionsDir:/etc/newman" \
           "$additionalVolumes" postman/newman:alpine run "${{ inputs.collection-name }}" \
           --environment="${{ inputs.env-name }}" -r cli,junit \
-          "$caCertsOption" "$clientCertConfigOption" || \
-          echo "Collection ${{ inputs.short-name }} failed to run" > \
-            "./test-results/${{ inputs.results-dir }}/failed_${{ inputs.short-name }}_at.lst"
+          "$caCertsOption" "$clientCertConfigOption"  || \
+          { echo "Collection ${{ inputs.short-name }} failed to run" > \
+            "./test-results/${{ inputs.results-dir }}/failed_${{ inputs.short-name }}_at.lst"; \
+            docker compose -f "$composeFile" --env-file ./docker.env logs > ./nifi_reg_log_tmp.lst; \
+            cp ./nifi_reg_log_tmp.lst "./test-results/${{ inputs.results-dir }}/nifi_reg_log_after_newman.log"; }
+        summaryFileName=$(get_next_summary_file_name "${{ inputs.results-dir }}")
+        if [ -f "./test-results/${{ inputs.results-dir }}/failed_${{ inputs.short-name }}_at.lst" ]; then
+          # failed:
+          echo "| Autotest collection ${{ inputs.short-name }}   | Failed :x:                 |" \
+            >"./test-results/${{ inputs.results-dir }}/$summaryFileName"
+        else
+          # success
+          echo "| Autotest collection ${{ inputs.short-name }}   | Success :white_check_mark: |" \
+            >"./test-results/${{ inputs.results-dir }}/$summaryFileName"
+        fi
     - name: Collect test results
       shell: bash
       continue-on-error: true

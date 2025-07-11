@@ -52,13 +52,16 @@ jobs:
       upload-artifact: true
       skip-sonar: true
   docker-build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        run-mode: [ 'plain', 'tls', 'tls-db', 'tls-db-std', 'oidc' ]
     needs: [ mvn ]
     runs-on: ubuntu-latest
     steps:
       - name: Input parameters
         shell: bash
         run: |
-          echo "Java version: ${{ github.event.inputs.java-version || '21' }}" >> $GITHUB_STEP_SUMMARY
           mkdir -p ./test-results/
       - name: Checkout code
         uses: actions/checkout@v4
@@ -71,33 +74,45 @@ jobs:
           name: 'qubership-nifi-registry-local-build'
       - name: Run local docker build
         run: docker build -t local-nifi-registry:test .
-      - name: Run tests for nifi-registry in plain (non-TLS mode)
-        uses: ./.github/actions/run-nifi-reg-tests-plain
-      - name: Run tests for nifi-registry in TLS mode
-        uses: ./.github/actions/run-nifi-reg-tests-tls
-      - name: Run tests for nifi-registry in TLS mode with PG option and cached authorizers
-        uses: ./.github/actions/run-nifi-reg-tests-tls-db
-      - name: Run tests for nifi-registry in TLS mode with PG option and standard authorizers
-        uses: ./.github/actions/run-nifi-reg-tests-tls-db-std
-      - name: Run tests for nifi-registry in OIDC mode
-        uses: ./.github/actions/run-nifi-reg-tests-oidc
+      - name: Run tests with mode = ${{ matrix.run-mode }}
+        uses: ./.github/actions/run-nifi-reg-tests-generic
+        with:
+          run-mode: '${{ matrix.run-mode }}'
       - name: Verify test results
         shell: bash
         run: |
+          echo "Preparing summary..."
+          {
+            echo "## Autotests summary"
+            echo "Run mode = ${{ matrix.run-mode }}"
+            echo ""
+            echo "| Step                                           | Result                     |"
+            echo "| ---------------------------------------------- | -------------------------- |"
+            cat ./test-results/*/summary_*.txt
+            echo ""
+          } >> $GITHUB_STEP_SUMMARY
           echo "Checking test results for failures..."
           failed_cnt=$(find ./test-results -name "failed_*.lst" | wc -l)
           echo "Found failed steps = $failed_cnt"
           if [ "$failed_cnt" == "0" ]; then
             echo "All tests were successful!"
+            echo "All tests were successful!" >> $GITHUB_STEP_SUMMARY
           else
             echo "Some tests ($failed_cnt) failed. Marking as failure."
+            echo "Some tests ($failed_cnt) failed. Marking as failure." >> $GITHUB_STEP_SUMMARY
+            if [ -f ./docker.env ]; then
+              if [ -d "./test-results/${{ matrix.run-mode }}" ]; then
+                echo "Copying docker.env to test-results/${{ matrix.run-mode }}..."
+                cp ./docker.env "./test-results/${{ matrix.run-mode }}/"
+              fi
+            fi
             exit 1;
           fi
       - name: Upload test results
         if: failure() || cancelled()
         uses: actions/upload-artifact@v4
         with:
-          name: nifi-registry-autotests-logs
+          name: nifi-registry-autotests-${{ matrix.run-mode }}-logs
           path: |
             ./test-results
           retention-days: 2
