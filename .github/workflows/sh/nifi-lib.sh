@@ -82,6 +82,11 @@ generate_random_password() {
 $(tr -dc '!@#%^&*()-+{}=`~,<>./?' </dev/urandom | head -c "$3")" | fold -w 1 | shuf | tr -d '\n'
 }
 
+generate_uuid() {
+    head=$(head -c 16 /dev/urandom | od -An -t x1 | tr -d ' ')
+    echo "${head:0:8}-${head:8:4}-${head:12:4}-${head:16:4}-${head:20:12}"
+}
+
 get_next_summary_file_name() {
     current_steps_count=$(find "./test-results/$1" -name "summary_*.txt" | wc -l)
     echo "summary_step$(printf %03d $((current_steps_count + 1))).txt"
@@ -90,8 +95,9 @@ get_next_summary_file_name() {
 configure_log_level() {
     local targetPkg="$1"
     local targetLevel="$2"
-    local consulUrl="$3"
-    local ns="$4"
+    local secretId="$3"
+    local consulUrl="$4"
+    local ns="$5"
     if [ -z "$consulUrl" ]; then
         consulUrl='http://localhost:8500'
     fi
@@ -102,7 +108,7 @@ configure_log_level() {
     targetPath=$(echo "logger.$targetPkg" | sed 's|\.|/|g')
     echo "Consul URL = $consulUrl, namespace = $ns, targetPath = $targetPath"
     rm -rf ./consul-put-resp.txt
-    respCode=$(curl -X PUT -sS --data "$targetLevel" -w '%{response_code}' -o ./consul-put-resp.txt \
+    respCode=$(curl -X PUT -sS --data "$targetLevel" -w '%{response_code}' -o ./consul-put-resp.txt --header "X-Consul-Token: ${secretId}" \
         "$consulUrl/v1/kv/config/$ns/application/$targetPath")
     echo "Response code = $respCode"
     if [ "$respCode" == "200" ]; then
@@ -119,22 +125,27 @@ test_log_level() {
     local targetPkg="$1"
     local targetLevel="$2"
     local resultsDir="$3"
+    local containerName="$4"
+    local secretId="$5"
     resultsPath="./test-results/$resultsDir"
     echo "Testing Consul logging parameters configuration for package = $targetPkg, level = $targetLevel"
     echo "Results path = $resultsPath"
-    configure_log_level "$targetPkg" "$targetLevel" ||
+    configure_log_level "$targetPkg" "$targetLevel" "$secretId" ||
         echo "Consul config failed" >"$resultsPath/failed_consul_config.lst"
     echo "Waiting 20 seconds..."
     sleep 20
     echo "Copying logback.xml..."
-    docker cp local-nifi-plain:/opt/nifi/nifi-current/conf/logback.xml "$resultsPath/logback.xml"
+    docker cp "$containerName":/opt/nifi-registry/nifi-registry-current/conf/logback.xml "$resultsPath/logback.xml"
     res="0"
     grep "$targetPkg" "$resultsPath/logback.xml" | grep 'logger' | grep "$targetLevel" || res="1"
+    summaryFileName=$(get_next_summary_file_name "$resultsDir")
     if [ "$res" == "0" ]; then
         echo "Logback configuration successfully applied"
+        echo "| Logging levels configuration                   | Success :white_check_mark: |" >"$resultsPath/$summaryFileName"
     else
         echo "Logback configuration failed to apply"
-        echo "NiFi logger config update failed" >"$resultsPath/failed_log_config.lst"
+        echo "NiFi Registry logger config update failed" >"$resultsPath/failed_log_config.lst"
+        echo "| Logging levels configuration                   | Failed :x:                 |" >"$resultsPath/$summaryFileName"
     fi
 }
 
@@ -240,6 +251,10 @@ create_docker_env_file() {
     gitDir="$(pwd)"
     echo "BASE_DIR=$gitDir" >>./docker.env
     echo "KEYCLOAK_TLS_PASS=$KEYCLOAK_TLS_PASS" >>./docker.env
+    CONSUL_TOKEN=$(generate_uuid)
+    echo "$CONSUL_TOKEN" >./consul-acl-token.tmp
+    export CONSUL_TOKEN
+    echo "CONSUL_TOKEN=$CONSUL_TOKEN" >>./docker.env
 }
 
 generate_add_certs() {

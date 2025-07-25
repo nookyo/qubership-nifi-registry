@@ -39,6 +39,14 @@ runs:
         wait_nifi_reg_container "localhost" "18080" ".github/docker/${{ inputs.run-mode }}/docker-compose.yaml" "true" \
           "5" "40" "${{ inputs.run-mode }}" "./temp-vol/tls-cert/nifi/nifi-cert.pem" \
           "./temp-vol/tls-cert/nifi/CN=admin_OU=NIFI.p12" "$NIFI_CLIENT_PASSWORD"
+    - name: Test log level configuration
+      if: ${{ inputs.run-mode == 'tls' || inputs.run-mode == 'tls-db' }}
+      shell: bash
+      continue-on-error: true
+      run: |
+        . .github/workflows/sh/nifi-lib.sh
+        [ -f ./consul-acl-token.tmp ] && CONSUL_TOKEN=$(cat ./consul-acl-token.tmp)
+        test_log_level 'org.qubership.test.pkg2' 'DEBUG' '${{ inputs.run-mode }}' 'local-nifi-registry' "$CONSUL_TOKEN"
     - name: Run nifi registry policy API tests
       if: ${{ inputs.run-mode != 'plain' }}
       continue-on-error: true

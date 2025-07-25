@@ -1,34 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- Copyright 2020-2025 NetCracker Technology Corporation
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.qubership.nifi</groupId>
-    <artifactId>qubership-nifi-registry</artifactId>
+    <artifactId>qubership-consul</artifactId>
     <packaging>pom</packaging>
     <version>1.0.3</version>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>qubership-nifi-registry is a service built on top of Apache NiFi Registry</description>
+    <url>https://github.com/Netcracker/qubership-nifi-registry</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Netcracker</name>
+            <email>opensourcegroup@netcracker.com</email>
+            <organization>Netcracker Technology</organization>
+            <organizationUrl>https://www.netcracker.com</organizationUrl>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/Netcracker/qubership-nifi-registry.git</connection>
+        <developerConnection>scm:git:ssh://github.com:Netcracker/qubership-nifi-registry.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-nifi-registry/tree/main</url>
+    </scm>
+
     <modules>
-        <module>nifi-registry-util</module>
-        <module>nifi-registry-migration-util</module>
-        <module>nifi-registry-db-util</module>
-        <module>nifi-registry-assembly</module>
-        <module>qubership-cached-providers</module>
-        <module>qubership-consul</module>
+        <module>qubership-consul-util</module>
+        <module>qubership-consul-application</module>
     </modules>
 
     <parent>
@@ -45,23 +51,47 @@
         <pmd.version>3.26.0</pmd.version>
         <jacoco.version>0.8.8</jacoco.version>
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
-        <postgresql.jdbc.version>42.7.2</postgresql.jdbc.version>
-        <commons-io.version>2.14.0</commons-io.version>
-        <testcontainers.version>1.20.4</testcontainers.version>
+        <com-google-guava.version>32.0.1-jre</com-google-guava.version>
+        <spring-cloud-consul.version>4.2.1</spring-cloud-consul.version>
+        <spring-cloud-context.version>4.2.1</spring-cloud-context.version>
         <junit.jupiter.version>5.11.1</junit.jupiter.version>
-        <lombok.version>1.18.30</lombok.version>
+        <testcontainers.version>1.20.4</testcontainers.version>
         <nifi.version>1.28.1</nifi.version>
-        <hikari.cp.version>5.1.0</hikari.cp.version>
-        <mockito.version>4.11.0</mockito.version>
     </properties>
 
-    <distributionManagement>
-        <repository>
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>central</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>central</id>
+                    <name>Central Maven Repository</name>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
             <id>github</id>
-            <name>GitHub OWNER Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/netcracker/qubership-nifi-registry</url>
-        </repository>
-    </distributionManagement>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <url>https://maven.pkg.github.com/netcracker/qubership-nifi-registry</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -71,7 +101,7 @@
                 <version>${flatten-maven-plugin.version}</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
-                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <flattenMode>oss</flattenMode>
                 </configuration>
                 <executions>
                     <execution>
@@ -188,6 +218,46 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.7</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

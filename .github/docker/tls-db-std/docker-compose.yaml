@@ -39,7 +39,7 @@ services:
       - dbUrl=jdbc:postgresql://postgresql:5432/postgres
       - dbUsername=postgres
       - dbPassword=${DB_PASSWORD}
-    container_name: local-nifi-registry-tls-db
+    container_name: local-nifi-registry
     hostname: nifi-registry
   consul:
     image: hashicorp/consul:1.20

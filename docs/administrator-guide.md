@@ -34,6 +34,10 @@ The table below describes environment variables supported by qubership-nifi-regi
 | NIFI_REG_DB_PASSWORD         | Y (if NIFI_REG_USE_PGDB = true)   |         | Defines password for DB connection.                                                                                                                                                                                                                    |
 | NIFI_REG_MIGRATE_TO_DB       | N                                 |         | If set to `true` and NIFI_REG_USE_PGDB = true, then qubership-nifi-registry will migrate data from file-storage to PostgreSQL DB, if it's empty. If DB was previously migrated, then migration will be skipped.                                        |
 | X_JAVA_ARGS                  | N                                 |         | A list of additional java startup arguments. Must be valid list of arguments separated by spaces just like in command-line.                                                                                                                            |
+| CONSUL_ENABLED               | N                                 | false   | Defines, if Consul integration is enabled (`true`) or not (`false`)                                                                                                                                                                                    |
+| CONSUL_URL                   | Y (if CONSUL_ENABLED = true)      |         | URL to access Consul service. Must be in format: `<hostname>:<port>`.                                                                                                                                                                                  |
+| CONSUL_CONFIG_JAVA_OPTIONS   | N                                 |         | A list of additional java startup arguments for auxiliary application used for Consul integration.                                                                                                                                                     |
+| CONSUL_ACL_TOKEN             | N                                 |         | An access token that is used in Consul to manage permissions and security for interactions between NiFi-Registry and Consul.                                                                                                                           |
 
 ## Extension points
 
@@ -62,6 +66,15 @@ The table below provides a list of volumes and directories and their description
 | TLS certificates           | Directory | /tmp/tls-certs                                           | Contains TLS keystore (keystore.p12) and truststore (truststore.p12). Required for startup with AUTH = oidc, tls, ldap.                                                  |
 | Configuration data         | Directory | /opt/nifi-registry/nifi-registry-current/persistent_data | Contains metadata database and flow storage, if NIFI_REG_USE_PGDB != `true`.                                                                                             |
 | Cached providers extension | Directory | /opt/nifi-registry/nifi-registry-current/ext-cached      | Extension for cached access policy and user group providers. See also environment property `NIFI_REG_DB_FLOW_AUTHORIZERS` and section below dedicated to this extension. |
+
+## Changing logging levels
+
+You can modify logging levels by:
+1. Setting `ROOT_LOG_LEVEL` environment variable. Be mindful that this variable allows you to set only root logging level;
+2. Setting logging level for specific package in Consul. Consul property name must start with "logger." followed by package name. Value should be one of logging level supported by Logback: ALL, TRACE, DEBUG, INFO, WARN, ERROR, OFF. Property should be located in one of two locations:
+    1. config/${NAMESPACE}/application
+       where `NAMESPACE` is a value of `NAMESPACE` environment variable, or value = `local`, if not set.
+    2. config/${NAMESPACE}/${MICROSERVICE_NAME} or qubership-nifi-registry, if MICROSERVICE_NAME not set.
 
 ## Migration from file storage
 

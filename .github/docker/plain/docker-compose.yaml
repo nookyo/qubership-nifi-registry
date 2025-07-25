@@ -9,7 +9,7 @@ services:
       - 127.0.0.1:18080:18080
     environment:
       - AUTH=none
-    container_name: local-nifi-registry-plain
+    container_name: local-nifi-registry
     hostname: nifi-registry
   consul:
     image: hashicorp/consul:1.20

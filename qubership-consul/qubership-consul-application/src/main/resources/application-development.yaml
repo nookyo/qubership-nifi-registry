@@ -1,0 +1,14 @@
+
+spring:
+  config:
+    activate.on-profile: development
+  cloud:
+    consul:
+      config:
+        enabled: false
+      enabled: false
+    bootstrap:
+      enabled: true
+    config:
+      fail-fast: false
+      enabled: false
