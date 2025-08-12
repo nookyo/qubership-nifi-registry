@@ -86,7 +86,7 @@ RUN rm -rf $NIFI_TOOLKIT_HOME/lib/spring-web-*.jar \
 RUN mkdir -p ${NIFI_REGISTRY_HOME}/ext-cached \
     && mkdir -p ${NIFI_REGISTRY_HOME}/utility-lib
 COPY --chown=1000:1000 qubership-cached-providers/target/qubership-cached-providers-*.jar qubership-cached-providers/target/lib/*.jar ${NIFI_REGISTRY_HOME}/ext-cached/
-COPY --chown=1000:1000 qubership-consul/qubership-consul-application/target/qubership-consul-application*.jar ${NIFI_REGISTRY_HOME}/utility-lib/qubership-consul-application.jar
+COPY --chown=1000:1000 qubership-nifi-registry-consul/qubership-nifi-registry-consul-application/target/qubership-nifi-registry-consul-application*.jar ${NIFI_REGISTRY_HOME}/utility-lib/qubership-nifi-registry-consul-application.jar
 COPY --chown=1000:1000 qubership-nifi-registry-deps/target/lib/json-smart-*.jar ${NIFI_REGISTRY_HOME}/lib/spp/json-smart-2.5.2.jar
 
 FROM alpine/java:21-jdk as upd

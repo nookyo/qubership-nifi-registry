@@ -48,6 +48,20 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * The {@code PropertiesManager} is responsible for managing configuration properties
+ * and logging settings for the Qubership NiFi Registry application.
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *   <li>Accesses Consul to retrieve dynamic configuration properties.</li>
+ *   <li>Generates {@code nifi-registry.properties} and {@code logback.xml} files before application startup.</li>
+ *   <li>Watches for configuration changes and periodically updates {@code logback.xml}
+ *   to support dynamic logging level changes.</li>
+ * </ul>
+ * <p>
+ * This class is a Spring component with refresh scope, allowing it to respond to configuration changes at runtime.
+ */
 @Component
 @RefreshScope
 public class PropertiesManager {
@@ -78,11 +92,27 @@ public class PropertiesManager {
     }
 
     /**
-     * Generates nifi-registry.properties file.
-     * @throws IOException
-     * @throws ParserConfigurationException
-     * @throws TransformerException
-     * @throws SAXException
+     * Default constructor for Spring.
+     */
+    public PropertiesManager() {
+        // Default constructor for Spring
+    }
+
+    /**
+     * Generates the {@code nifi-registry.properties} and {@code logback.xml}
+     * files using Consul data and default values.
+     * <p>
+     * This method performs the following steps:
+     * <ol>
+     *   <li>Reads properties from Consul and merges them with default and internal (unchangeable) properties.</li>
+     *   <li>Builds the {@code nifi-registry.properties} file with the combined properties.</li>
+     *   <li>Builds the {@code logback.xml} file, updating logger levels as specified in Consul.</li>
+     * </ol>
+     *
+     * @throws IOException if an I/O error occurs while reading or writing files
+     * @throws ParserConfigurationException if a configuration error occurs while parsing XML
+     * @throws TransformerException if an error occurs during XML transformation
+     * @throws SAXException if an error occurs while parsing XML
      */
     public void generateNifiRegistryProperties() throws IOException, ParserConfigurationException,
             TransformerException, SAXException {
@@ -173,7 +203,7 @@ public class PropertiesManager {
         Set<String> allPropertyNames = new HashSet<>();
         for (PropertySource src1 : srcs) {
 
-            // get properties  for ConsulPropertySource..
+            // get properties for ConsulPropertySource
             if (ConsulPropertySource.class.isAssignableFrom(src1.getClass())) {
                 String[] allNames = ((ConsulPropertySource) src1).getPropertyNames();
                 if (allNames != null) {
@@ -199,8 +229,9 @@ public class PropertiesManager {
     }
 
     /**
-     * Builds nifi-registry.properties file.
-     * @throws IOException
+     * Builds the {@code nifi-registry.properties} file by combining default,
+     * internal (unchangeable), and Consul-provided properties.
+     * @throws IOException if an I/O error occurs while writing the properties file
      */
     public void buildPropertiesFile() throws IOException {
         String fileName = path + "nifi-registry.properties";
@@ -246,10 +277,12 @@ public class PropertiesManager {
     }
 
     /**
-     * Gets ordered properties map.
-     * @param rs consul data
-     * @return ordered properties map
-     * @throws IOException
+     * Loads properties from the given resource (file) and returns them as an ordered map,
+     * preserving the order of the properties.
+     *
+     * @param rs the resource containing properties data
+     * @return a {@code LinkedHashMap} of property names and values, in file order
+     * @throws IOException if an I/O error occurs while reading the resource
      */
     public Map<String, String> getOrderedProperties(Resource rs) throws IOException {
         Map<String, String> mp = new LinkedHashMap<>();
@@ -264,8 +297,12 @@ public class PropertiesManager {
     }
 
     /**
-     * Handles environment change event: generates updated logback.xml to support dynamic logging level changes.
-     * @param event environment change event
+     * Handles environment change events by regenerating the {@code logback.xml} file
+     * to support dynamic logging level changes.
+     * <p>
+     * This method is triggered automatically by Spring when configuration changes are detected in the environment.
+     *
+     * @param event the environment change event containing the changed property keys
      */
     @EventListener
     public void handleChangeEvent(EnvironmentChangeEvent event) {

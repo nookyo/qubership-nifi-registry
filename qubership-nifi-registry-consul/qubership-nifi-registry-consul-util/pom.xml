@@ -5,13 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.qubership.nifi</groupId>
-        <artifactId>qubership-consul</artifactId>
-        <version>1.0.3</version>
+        <artifactId>qubership-nifi-registry-consul</artifactId>
+        <version>1.0.4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>qubership-consul-util</artifactId>
+    <artifactId>qubership-nifi-registry-consul-util</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
+    <url>https://github.com/Netcracker/qubership-nifi-registry</url>
+    <description>
+        The qubership-nifi-registry-consul-util module provides utility classes and services for integrating Apache NiFi Registry with Consul.
+        It enables dynamic configuration management, advanced property handling, and supports runtime updates of logging levels and registry properties.
+    </description>
 
     <dependencies>
         <dependency>

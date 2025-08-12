@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.qubership.nifi</groupId>
-        <artifactId>qubership-consul</artifactId>
-        <version>1.0.3</version>
+        <artifactId>qubership-nifi-registry-consul</artifactId>
+        <version>1.0.4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>qubership-consul-application</artifactId>
+    <artifactId>qubership-nifi-registry-consul-application</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>org.qubership.nifi</groupId>
-            <artifactId>qubership-consul-util</artifactId>
+            <artifactId>qubership-nifi-registry-consul-util</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

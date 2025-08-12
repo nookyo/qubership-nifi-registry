@@ -5,12 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.qubership.nifi</groupId>
-    <artifactId>qubership-consul</artifactId>
+    <artifactId>qubership-nifi-registry-consul</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>qubership-nifi-registry is a service built on top of Apache NiFi Registry</description>
+    <description>
+        The qubership-nifi-registry-consul module integrates Apache NiFi Registry with Consul for dynamic configuration management and advanced property handling.
+        This module enables seamless retrieval and updating of configuration properties from Consul, supports dynamic logging level changes.
+    </description>
     <url>https://github.com/Netcracker/qubership-nifi-registry</url>
     <licenses>
         <license>
@@ -29,12 +32,12 @@
     <scm>
         <connection>scm:git:git://github.com/Netcracker/qubership-nifi-registry.git</connection>
         <developerConnection>scm:git:ssh://github.com:Netcracker/qubership-nifi-registry.git</developerConnection>
-        <url>https://github.com/Netcracker/qubership-nifi-registry/tree/main</url>
+        <url>https://github.com/Netcracker/qubership-nifi-registry/tree/main/qubership-nifi-registry-consul</url>
     </scm>
 
     <modules>
-        <module>qubership-consul-util</module>
-        <module>qubership-consul-application</module>
+        <module>qubership-nifi-registry-consul-util</module>
+        <module>qubership-nifi-registry-consul-application</module>
     </modules>
 
     <parent>

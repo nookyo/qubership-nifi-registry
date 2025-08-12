@@ -21,14 +21,14 @@
     <groupId>org.qubership.nifi</groupId>
     <artifactId>qubership-nifi-registry</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <modules>
         <module>nifi-registry-util</module>
         <module>nifi-registry-migration-util</module>
         <module>nifi-registry-db-util</module>
         <module>nifi-registry-assembly</module>
         <module>qubership-cached-providers</module>
-        <module>qubership-consul</module>
+        <module>qubership-nifi-registry-consul</module>
         <module>qubership-nifi-registry-deps</module>
     </modules>
 
@@ -57,13 +57,39 @@
         <json.smart.version>2.5.2</json.smart.version>
     </properties>
 
-    <distributionManagement>
-        <repository>
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>central</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>central</id>
+                    <name>Central Maven Repository</name>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
             <id>github</id>
-            <name>GitHub OWNER Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/netcracker/qubership-nifi-registry</url>
-        </repository>
-    </distributionManagement>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <url>https://maven.pkg.github.com/netcracker/qubership-nifi-registry</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
