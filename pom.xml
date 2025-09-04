@@ -55,6 +55,7 @@
         <hikari.cp.version>5.1.0</hikari.cp.version>
         <mockito.version>4.11.0</mockito.version>
         <json.smart.version>2.5.2</json.smart.version>
+        <spring-framework.version>6.2.10</spring-framework.version>
     </properties>
 
     <profiles>

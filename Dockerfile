@@ -142,3 +142,4 @@ EXPOSE 18080 18443
 #
 # ENTRYPOINT overrides CMD defined in base image
 ENTRYPOINT ["../scripts/start.sh"]
+HEALTHCHECK NONE
