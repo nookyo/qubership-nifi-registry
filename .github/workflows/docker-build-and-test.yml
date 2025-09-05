@@ -9,6 +9,7 @@ on:
       - 'nifi-registry-migration-util/**'
       - 'nifi-registry-util/**'
       - 'qubership-cached-providers/**'
+      - 'qubership-nifi-registry-consul/**'
       - 'pom.xml'
       - 'Dockerfile'
       - 'conf-template-custom/**'
@@ -25,6 +26,7 @@ on:
       - 'nifi-registry-migration-util/**'
       - 'nifi-registry-util/**'
       - 'qubership-cached-providers/**'
+      - 'qubership-nifi-registry-consul/**'
       - 'pom.xml'
       - 'Dockerfile'
       - 'conf-template-custom/**'
@@ -68,6 +70,7 @@ jobs:
         with:
           # Full git history is needed to get a proper list of changed files within `super-linter`
           fetch-depth: 0
+          persist-credentials: false
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:

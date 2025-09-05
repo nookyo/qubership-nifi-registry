@@ -50,6 +50,7 @@ public class PropertiesManagerTest {
         //fill initial consul data:
         Container.ExecResult res = null;
         try {
+            //configure logging levels:
             res = consul.execInContainer(
                     "consul", "kv", "put", "config/local/application/logger.org.qubership", "DEBUG");
             LOG.debug("Result for put config/local/application/logger.org.qubership = {}", res.getStdout());
@@ -58,6 +59,19 @@ public class PropertiesManagerTest {
                     "consul", "kv", "put",
                     "config/local/application/logger.org.apache.nifi.registry.StdErr", "INFO");
             LOG.debug("Result for put config/local/application/logger.org.apache.nifi.registry.StdErr = {}",
+                    res.getStdout());
+            Assertions.assertTrue(res.getStdout() != null && res.getStdout().contains("Success"));
+            //configure properties:
+            //nifi.registry.db.maxConnections -- with default value
+            res = consul.execInContainer(
+                    "consul", "kv", "put", "config/local/application/nifi/registry/db/maxConnections", "15");
+            LOG.debug("Result for put config/local/application/nifi/registry/db/maxConnections = {}", res.getStdout());
+            Assertions.assertTrue(res.getStdout() != null && res.getStdout().contains("Success"));
+            //nifi.registry.security.user.oidc.connect.timeout -- w/o default value
+            res = consul.execInContainer(
+                    "consul", "kv", "put",
+                    "config/local/application/nifi/registry/security/user/oidc/connect/timeout", "10 secs");
+            LOG.debug("Result for put config/local/application/nifi/registry/security/user/oidc/connect/timeout = {}",
                     res.getStdout());
             Assertions.assertTrue(res.getStdout() != null && res.getStdout().contains("Success"));
         } catch (IOException | InterruptedException e) {
@@ -88,6 +102,10 @@ public class PropertiesManagerTest {
         try (InputStream in = new BufferedInputStream(new FileInputStream(nifiRegistryPropsConfig))) {
             nifiRegistryProps.load(in);
             Assertions.assertEquals("200", nifiRegistryProps.getProperty("nifi.registry.web.jetty.threads"));
+            Assertions.assertEquals("15",
+                    nifiRegistryProps.getProperty("nifi.registry.db.maxConnections"));
+            Assertions.assertEquals("10 secs",
+                    nifiRegistryProps.getProperty("nifi.registry.security.user.oidc.connect.timeout"));
         } catch (IOException e) {
             Assertions.fail("Failed to read nifi-registry.properties", e);
         }

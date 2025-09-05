@@ -9,6 +9,7 @@ on:
       - 'nifi-registry-migration-util/**'
       - 'nifi-registry-util/**'
       - 'qubership-cached-providers/**'
+      - 'qubership-nifi-registry-consul/**'
       - 'pom.xml'
   pull_request:
     paths:
@@ -17,6 +18,7 @@ on:
       - 'nifi-registry-migration-util/**'
       - 'nifi-registry-util/**'
       - 'qubership-cached-providers/**'
+      - 'qubership-nifi-registry-consul/**'
       - 'pom.xml'
   workflow_dispatch:
     inputs:
@@ -65,13 +67,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Input parameters
+        env:
+          JAVA_VERSION: ${{ github.event.inputs.java-version || '21' }}
         run: |
-          echo "Java version: ${{ github.event.inputs.java-version || '21' }}" >> $GITHUB_STEP_SUMMARY
+          echo "Java version: ${JAVA_VERSION}" >> $GITHUB_STEP_SUMMARY
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           # Full git history is needed to get a proper list of changed files within `super-linter`
           fetch-depth: 0
+          persist-credentials: false
       - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
@@ -93,12 +98,16 @@ jobs:
         run: >
           mvn --batch-mode package
           -Dgpg.skip=true
-          org.sonarsource.scanner.maven:sonar-maven-plugin:${{ vars.SONAR_PLUGIN_VERSION }}:sonar
-          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
-          -Dsonar.host.url=${{ vars.SONAR_HOST_URL }}
+          org.sonarsource.scanner.maven:sonar-maven-plugin:${SONAR_PLUGIN_VERSION}:sonar
+          -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.organization=${SONAR_ORGANIZATION}
+          -Dsonar.host.url=${SONAR_HOST_URL}
         env:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PLUGIN_VERSION: ${{ vars.SONAR_PLUGIN_VERSION }}
+          SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
       - name: Run local maven build w/o sonar
         if: ${{ inputs.skip-sonar }}
         run: >

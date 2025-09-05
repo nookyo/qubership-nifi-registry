@@ -240,7 +240,15 @@ public class PropertiesManager {
         // as is without order change
         Map<String, String> combinedNifiRegistryProperties = getOrderedProperties(defaultPropertiesFile);
 
-        //nifi_internal properties should be placed as is, in same order
+        //consul
+        for (String consulKey : consulPropertiesMap.keySet()) {
+            // if it starts with "nifi.registry.*", add in nifiRegistryProperties
+            if (consulKey.toLowerCase().startsWith("nifi.registry.")) {
+                combinedNifiRegistryProperties.put(consulKey, consulPropertiesMap.get(consulKey));
+            }
+        }
+
+        //nifi_registry_internal properties should be placed as is, in same order
         Map<String, String> nifiRegistryInternalProps = getOrderedProperties(internalPropertiesFile);
         for (String s : nifiRegistryInternalProps.keySet()) {
             combinedNifiRegistryProperties.put(s, nifiRegistryInternalProps.get(s));
