@@ -31,7 +31,7 @@
     </developers>
     <scm>
         <connection>scm:git:git://github.com/Netcracker/qubership-nifi-registry.git</connection>
-        <developerConnection>scm:git:ssh://github.com:Netcracker/qubership-nifi-registry.git</developerConnection>
+        <developerConnection>scm:git:ssh://github.com/Netcracker/qubership-nifi-registry.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-nifi-registry/tree/main/qubership-nifi-registry-consul</url>
     </scm>
 
