@@ -37,6 +37,30 @@ RUN chmod 664 /opt/java/openjdk/lib/security/cacerts \
 
 USER 10001
 
+FROM alpine/java:21-jdk as upd
+
+USER root
+
+RUN apk add --no-cache zip=3.0-r12 \
+    && mkdir -p /tmp-upd \
+    && chown 10001:0 /tmp-upd
+
+USER 10001:0
+
+RUN mkdir -p /tmp-upd/WEB-INF/lib/
+
+COPY --chown=10001:0 --from=apache/nifi-registry:1.28.1 /opt/nifi-registry/nifi-registry-current/lib/spp/spring-web-5.3.39.jar /tmp-upd/
+COPY --chown=10001:0 --from=apache/nifi-registry:1.28.1 /opt/nifi-registry/nifi-registry-current/lib/nifi-registry-web-api-1.28.1.war /tmp-upd/
+COPY --chown=1000:1000 qubership-nifi-registry-deps/target/lib/json-smart-*.jar /tmp-upd/WEB-INF/lib/
+WORKDIR /tmp-upd
+RUN zip -d spring-web-5.3.39.jar 'org/springframework/remoting/httpinvoker/*' \
+    && mv spring-web-5.3.39.jar WEB-INF/lib/spring-web-5.3.39-1.jar \
+    && jar -uf nifi-registry-web-api-1.28.1.war WEB-INF/lib/spring-web-5.3.39-1.jar \
+    && zip -d nifi-registry-web-api-1.28.1.war WEB-INF/lib/spring-web-5.3.39.jar \
+    && jar -uf nifi-registry-web-api-1.28.1.war WEB-INF/lib/json-smart-2.5.2.jar \
+    && zip -d nifi-registry-web-api-1.28.1.war WEB-INF/lib/json-smart-2.5.1.jar \
+    && rm -rf WEB-INF/lib/json-smart-2.5.2.jar
+
 FROM apache/nifi-registry:1.28.1 as nifi-reg2
 
 RUN mkdir -p $NIFI_REGISTRY_HOME/persistent_data \
@@ -81,32 +105,16 @@ RUN rm -rf $NIFI_TOOLKIT_HOME/lib/spring-web-*.jar \
     && rm -rf $NIFI_TOOLKIT_HOME/lib/velocity-engine-core*.jar \
     && rm -rf $NIFI_TOOLKIT_HOME/lib/testng*.jar \
     && rm -rf $NIFI_TOOLKIT_HOME/lib/zookeeper*.jar \
-    && rm -rf $NIFI_REGISTRY_HOME/lib/spp/json-smart-*.jar
+    && rm -rf $NIFI_REGISTRY_HOME/lib/spp/json-smart-*.jar \
+    && rm -rf $NIFI_REGISTRY_HOME/lib/spp/spring-web-*.jar
 
 RUN mkdir -p ${NIFI_REGISTRY_HOME}/ext-cached \
     && mkdir -p ${NIFI_REGISTRY_HOME}/utility-lib
 COPY --chown=1000:1000 qubership-cached-providers/target/qubership-cached-providers-*.jar qubership-cached-providers/target/lib/*.jar ${NIFI_REGISTRY_HOME}/ext-cached/
 COPY --chown=1000:1000 qubership-nifi-registry-consul/qubership-nifi-registry-consul-application/target/qubership-nifi-registry-consul-application*.jar ${NIFI_REGISTRY_HOME}/utility-lib/qubership-nifi-registry-consul-application.jar
 COPY --chown=1000:1000 qubership-nifi-registry-deps/target/lib/json-smart-*.jar ${NIFI_REGISTRY_HOME}/lib/spp/json-smart-2.5.2.jar
-
-FROM alpine/java:21-jdk as upd
-
-USER root
-
-RUN apk add --no-cache zip=3.0-r12 \
-    && mkdir -p /tmp-upd \
-    && chown 10001:0 /tmp-upd
-
-USER 10001:0
-
-RUN mkdir -p /tmp-upd/WEB-INF/lib/
-
-COPY --chown=10001:0 --from=nifi-reg2 /opt/nifi-registry/nifi-registry-current/lib/nifi-registry-web-api-1.28.1.war /tmp-upd/
-COPY --chown=1000:1000 qubership-nifi-registry-deps/target/lib/json-smart-*.jar /tmp-upd/WEB-INF/lib/
-WORKDIR /tmp-upd
-RUN jar -uf nifi-registry-web-api-1.28.1.war WEB-INF/lib/json-smart-2.5.2.jar \
-    && zip -d nifi-registry-web-api-1.28.1.war WEB-INF/lib/json-smart-2.5.1.jar \
-    && rm -rf WEB-INF/lib/json-smart-2.5.2.jar
+COPY --chown=1000:1000 --from=upd /tmp-upd/nifi-registry-web-api-1.28.1.war $NIFI_REGISTRY_HOME/lib/
+COPY --chown=1000:1000 --from=upd /tmp-upd/WEB-INF/lib/spring-web-5.3.39-1.jar $NIFI_REGISTRY_HOME/lib/spp/spring-web-5.3.39-1.jar
 
 FROM base
 LABEL org.opencontainers.image.authors="qubership.org"
@@ -116,7 +124,6 @@ WORKDIR $NIFI_REGISTRY_HOME
 
 COPY --chown=10001:0 --from=nifi-reg2 $NIFI_REGISTRY_BASE_DIR/ $NIFI_REGISTRY_BASE_DIR/
 COPY --chown=10001:0 --from=nifi-reg2 $NIFI_REGISTRY_BASE_DIR/nifi-registry-current/conf $NIFI_REGISTRY_HOME/conf-template
-COPY --chown=10001:0 --from=upd /tmp-upd/nifi-registry-web-api-1.28.1.war $NIFI_REGISTRY_HOME/lib/
 
 RUN mkdir -p $NIFI_REGISTRY_HOME/db_schema_gen
 COPY nifi-registry-util/target/nifi-registry-util-*.jar $NIFI_REGISTRY_HOME/db_schema_gen/nifi-registry-util.jar
