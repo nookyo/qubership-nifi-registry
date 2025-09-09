@@ -70,6 +70,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
+        <!-- Maven Central -->
+        <!-- mvn deploy -P central -->
         <profile>
             <id>central</id>
             <activation>
@@ -79,9 +81,14 @@
                 <repository>
                     <id>central</id>
                     <name>Central Maven Repository</name>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
                 </repository>
             </distributionManagement>
         </profile>
+        <!-- GitHub packages -->
+        <!-- mvn deploy -P github -->
         <profile>
             <id>github</id>
             <activation>
@@ -91,7 +98,7 @@
                 <repository>
                     <id>github</id>
                     <name>GitHub Packages</name>
-                    <url>https://maven.pkg.github.com/netcracker/qubership-nifi-registry</url>
+                    <url>https://maven.pkg.github.com/Netcracker/qubership-nifi-registry</url>
                 </repository>
             </distributionManagement>
         </profile>
