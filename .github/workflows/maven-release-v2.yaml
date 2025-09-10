@@ -151,7 +151,7 @@ jobs:
         with:
           ref: v${{ needs.deploy.outputs.release-version }}
           download-artifact: true
-          download-artifact-path: '**/target'
+          download-artifact-path: ${{ github.workspace }}
           debug:  true
         env:
           GITHUB_TOKEN: ${{ github.token }}
